@@ -141,7 +141,6 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         self.assertArrayAlmostEqual(hist.mean(), size / nbins, delta=5.0 * np.sqrt(size / nbins))
         return
 
-
     def test_std(self):
         numsamples = 100
         hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=numsamples)
