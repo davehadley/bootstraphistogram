@@ -34,3 +34,8 @@ class TestPlotBootstrapHistogram1D(unittest.TestCase):
         hist = self.uniformhist()
         plot.fill_between(hist)
         plt.show()
+
+    def test_plot_scatter(self):
+        hist = self.uniformhist()
+        plot.scatter(hist)
+        plt.show()

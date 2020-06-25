@@ -13,7 +13,6 @@ _PERCENTILES_1SIGMA = (68.27 / 2.0, 100.0 - 68.27 / 2.0)
 _PERCENTILES_2SIGMA = (95.45 / 2.0, 100.0 - 95.45 / 2.0)
 _PERCENTILES_3SIGMA = (99.73 / 2.0, 100.0 - 99.73 / 2.0)
 
-
 _PERCENTILES_MEDIAN_AND_1SIGMA = (68.27 / 2.0, 50.0, 100.0 - 68.27 / 2.0)
 _PERCENTILES_MEDIAN_AND_2SIGMA = (95.45 / 2.0, 50.0, 100.0 - 95.45 / 2.0)
 _PERCENTILES_MEDIAN_AND_3SIGMA = (99.73 / 2.0, 50.0, 100.0 - 99.73 / 2.0)
@@ -57,7 +56,8 @@ def step(hist: BootstrapHistogram, percentiles: Iterable[float] = _PERCENTILES_M
     return result
 
 
-def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _PERCENTILES_1SIGMA,  ax: Optional[MplAxes] = None, **kwargs: Any):
+def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _PERCENTILES_1SIGMA,
+                 ax: Optional[MplAxes] = None, **kwargs: Any):
     ax = _getaxes(ax)
     low, high = min(percentiles), max(percentiles)
     X = hist.axes[0].edges
@@ -66,3 +66,15 @@ def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _P
     Y1 = np.concatenate((Y1, [Y1[-1]]))
     Y2 = np.concatenate((Y2, [Y2[-1]]))
     return ax.fill_between(x=X, y1=Y1, y2=Y2, step="post", **kwargs)
+
+
+def scatter(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any):
+    ax = _getaxes(ax)
+    X = []
+    Y = []
+    for binnum, binlow, binhigh in zip(range(len(hist.axes[0])), hist.axes[0].edges[:-1], hist.axes[0].edges[1:]):
+        y = hist.view()[binnum]
+        x = np.random.uniform(low=binlow, high=binhigh, size=len(y))
+        X.append(x)
+        Y.append(y)
+    return ax.scatter(X, Y, **kwargs)
