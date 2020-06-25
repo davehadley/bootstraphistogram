@@ -26,7 +26,7 @@ class TestPlotBootstrapHistogram1D(unittest.TestCase):
 
     def test_plot_step(self):
         hist = self.uniformhist()
-        plot.step(hist, autolabel=True)
+        plot.step(hist)
         plt.legend()
         plt.show()
 

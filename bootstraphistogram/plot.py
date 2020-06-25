@@ -32,26 +32,15 @@ def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: A
     return ax.errorbar(x=x, y=y, xerr=xerr, yerr=yerr, **kwargs)
 
 
-def step(hist: BootstrapHistogram, percentiles: Iterable[float] = _PERCENTILES_MEDIAN_AND_1SIGMA,
-         ax: Optional[MplAxes] = None, pckwargs: Optional[Dict[float, Dict[Any, Any]]] = None,
-         autolabel: bool = False) -> List[Line2D]:
+def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optional[MplAxes] = None, **kwargs: Any) -> \
+List[Line2D]:
     ax = _getaxes(ax)
     edges = hist.axes[0].edges
-    percentiles = list(percentiles)
-    if pckwargs is None:
-        pckwargs = defaultdict(dict)
-    if autolabel:
-        for q in percentiles:
-            pckwargs[q]["label"] = f"{q:.1f}%"
-    result = []
-    for q in percentiles:
-        Y = hist.percentile(q)
-        try:
-            kwargs = pckwargs[q]
-        except KeyError:
-            kwargs = {}
-        result.append(ax.step(edges, np.concatenate((Y, [Y[-1]])), where="post", **kwargs))
-    return result
+    if percentile is not None:
+        Y = hist.percentile(percentile)
+    else:
+        Y = hist.mean()
+    return ax.step(edges, np.concatenate((Y, [Y[-1]])), where="post", **kwargs)
 
 
 def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _PERCENTILES_1SIGMA,
