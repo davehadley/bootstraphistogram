@@ -1,5 +1,6 @@
+from collections import defaultdict
 from itertools import zip_longest
-from typing import Optional, Any, Iterable, List, Dict
+from typing import Optional, Any, Iterable, List, Dict, Tuple
 
 import numpy as np
 from matplotlib.axes import Axes as MplAxes
@@ -8,9 +9,14 @@ from matplotlib.lines import Line2D
 
 from bootstraphistogram import BootstrapHistogram
 
-_PERCENTILES_MEDIAN_AND_1SIGMA = [68.27 / 2.0, 50.0, 100.0 - 68.27 / 2.0, ]
-_PERCENTILES_MEDIAN_AND_2SIGMA = [95.45 / 2.0, 50.0, 100.0 - 95.45 / 2.0]
-_PERCENTILES_MEDIAN_AND_3SIGMA = [99.73 / 2.0, 50.0, 100.0 - 99.73 / 2.0]
+_PERCENTILES_1SIGMA = (68.27 / 2.0, 100.0 - 68.27 / 2.0)
+_PERCENTILES_2SIGMA = (95.45 / 2.0, 100.0 - 95.45 / 2.0)
+_PERCENTILES_3SIGMA = (99.73 / 2.0, 100.0 - 99.73 / 2.0)
+
+
+_PERCENTILES_MEDIAN_AND_1SIGMA = (68.27 / 2.0, 50.0, 100.0 - 68.27 / 2.0)
+_PERCENTILES_MEDIAN_AND_2SIGMA = (95.45 / 2.0, 50.0, 100.0 - 95.45 / 2.0)
+_PERCENTILES_MEDIAN_AND_3SIGMA = (99.73 / 2.0, 50.0, 100.0 - 99.73 / 2.0)
 
 
 def _getaxes(ax: Optional[MplAxes]):
@@ -30,12 +36,16 @@ def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: A
 
 
 def step(hist: BootstrapHistogram, percentiles: Iterable[float] = _PERCENTILES_MEDIAN_AND_1SIGMA,
-         ax: Optional[MplAxes] = None, pckwargs: Optional[Dict[float, Dict[Any, Any]]] = None) -> List[Line2D]:
+         ax: Optional[MplAxes] = None, pckwargs: Optional[Dict[float, Dict[Any, Any]]] = None,
+         autolabel: bool = False) -> List[Line2D]:
     ax = _getaxes(ax)
     edges = hist.axes[0].edges
     percentiles = list(percentiles)
     if pckwargs is None:
-        pckwargs = {q: {"label": f"{q:.1f}%"} for q in percentiles}
+        pckwargs = defaultdict(dict)
+    if autolabel:
+        for q in percentiles:
+            pckwargs[q]["label"] = f"{q:.1f}%"
     result = []
     for q in percentiles:
         Y = hist.percentile(q)
@@ -47,6 +57,12 @@ def step(hist: BootstrapHistogram, percentiles: Iterable[float] = _PERCENTILES_M
     return result
 
 
-def fill_between(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any):
+def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _PERCENTILES_1SIGMA,  ax: Optional[MplAxes] = None, **kwargs: Any):
     ax = _getaxes(ax)
-    return ax.fill_between(x=x, y1=y1, y2=y2, **kwargs)
+    low, high = min(percentiles), max(percentiles)
+    X = hist.axes[0].edges
+    Y1 = hist.percentile(low)
+    Y2 = hist.percentile(high)
+    Y1 = np.concatenate((Y1, [Y1[-1]]))
+    Y2 = np.concatenate((Y2, [Y2[-1]]))
+    return ax.fill_between(x=X, y1=Y1, y2=Y2, step="post", **kwargs)
