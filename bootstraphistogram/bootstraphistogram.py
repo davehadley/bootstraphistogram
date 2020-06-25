@@ -23,6 +23,12 @@ class BootstrapHistogram:
     def samples(self) -> bh.Histogram:
         return self._hist
 
+    def mean(self, flow=False) -> np.ndarray:
+        return np.mean(self.view(flow=flow), axis=-1)
+
+    def std(self, flow=False) -> np.ndarray:
+        return np.std(self.view(flow=flow), axis=-1)
+
     @property
     def numsamples(self) -> int:
         return len(self.axes[-1])

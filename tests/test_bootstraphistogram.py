@@ -131,3 +131,25 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         hist.fill(data)
         arr, _ = np.histogram(data, bins=hist.axes[0].edges)
         self.assertArrayEqual(hist.nominal.view(), arr)
+
+    def test_mean(self):
+        size = 100000
+        hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100)
+        data = np.random.uniform(size=size)
+        hist.fill(data)
+        nbins = len(hist.axes[0])
+        self.assertArrayAlmostEqual(hist.mean(), size / nbins, delta=5.0 * np.sqrt(size / nbins))
+        return
+
+
+    def test_std(self):
+        numsamples = 100
+        hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=numsamples)
+        size = 100000
+        data = np.random.uniform(size=size)
+        hist.fill(data)
+        nbins = len(hist.axes[0])
+        self.assertArrayAlmostEqual(hist.std(), np.sqrt(size / nbins),
+                                    delta=5.0 * _standard_error_std(size=numsamples,
+                                                                    sigma=np.sqrt(size / nbins)))
+        return
