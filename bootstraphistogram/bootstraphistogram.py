@@ -7,19 +7,24 @@ import numpy as np
 
 
 class BootstrapHistogram:
-    def __init__(self, *axes: bh.axis.Axis, numbootstrapsamples: int = 1000,
+    def __init__(self, *axes: bh.axis.Axis, numsamples: int = 1000,
                  rng: Union[int, np.random.Generator, None] = None, **kwargs: Any):
         axes = list(axes)
-        axes.append(bh.axis.Integer(0, numbootstrapsamples))
+        self._nominal = bh.Histogram(*axes, **kwargs)
+        axes.append(bh.axis.Integer(0, numsamples))
         self._random = np.random.default_rng(rng)
         self._hist = bh.Histogram(*axes, **kwargs)
 
     @property
-    def hist(self):
+    def nominal(self) -> bh.Histogram:
+        return self._nominal
+
+    @property
+    def samples(self) -> bh.Histogram:
         return self._hist
 
     @property
-    def numbootstrapsamples(self) -> int:
+    def numsamples(self) -> int:
         return len(self.axes[-1])
 
     @property
@@ -29,20 +34,14 @@ class BootstrapHistogram:
     def fill(self, *args: np.ndarray,
              weight: Optional[np.ndarray] = None,
              **kwargs: Any) -> "BootstrapHistogram":
+        self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = args[0].shape
-        for index in range(self.numbootstrapsamples):
+        for index in range(self.numsamples):
             w = self._random.poisson(1.0, size=shape)
             if weight is not None:
                 w *= weight
             hist.fill(*args, index, weight=w, **kwargs)
-        # turns out this is slower...
-        # shape = args[0].shape + (self.numbootstrapsamples,)
-        # ax = [np.tile(a, shape[-1]) for a in args]
-        # ax.append(np.repeat(self.axes[-1].centers, shape[:-1]))
-        # w = np.random.poisson(1.0, size=shape)
-        # w = w if weight is None else w*weight
-        # self._hist.fill(*ax, weight=w, **kwargs)
         return self
 
     def view(self, flow=False) -> Any:
