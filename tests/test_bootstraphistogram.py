@@ -1,3 +1,4 @@
+import pickle
 import unittest
 from typing import Optional
 
@@ -17,7 +18,11 @@ def _standard_error_std(size, sigma=1.0):
 
 class TestBootstrapHistogram1D(unittest.TestCase):
 
-    def assertArrayAlmostEqual(self, actual: np.ndarray, expected: np.ndarray, delta: float, msg: Optional[str] = None):
+    def assertArrayEqual(self, actual: np.ndarray, expected: np.ndarray, msg: Optional[str] = None) -> None:
+        return self.assertTrue(np.array_equal(actual, expected), msg=msg)
+
+    def assertArrayAlmostEqual(self, actual: np.ndarray, expected: np.ndarray, delta: float,
+                               msg: Optional[str] = None) -> None:
         return self.assertTrue(np.all(np.abs(actual - expected) < delta), msg=msg)
 
     def test_contructor(self):
@@ -70,7 +75,7 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         nbins = 5
         hist = BootstrapHistogram(bh.axis.Regular(nbins, -5.0, 5.0), numbootstrapsamples=numbootstrapsamples)
         view = hist.view()
-        self.assertTrue(np.array_equal(view, np.zeros(shape=(nbins, numbootstrapsamples))))
+        self.assertArrayEqual(view, np.zeros(shape=(nbins, numbootstrapsamples)))
 
     def test_equality(self):
         hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=123)
@@ -87,3 +92,35 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         hist1.fill(data)
         hist2.fill(data)
         self.assertNotEqual(hist1, hist2)
+
+    def test_add(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        hist2.fill(np.random.normal(size=1000))
+        a1 = hist1.view()
+        a2 = hist2.view()
+        hist3 = hist1 + hist2
+        self.assertArrayEqual(hist3.view(), a1 + a2)
+
+    def test_multiply_by_scalar(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        scale = 2.0
+        a1 = hist1.view() * scale
+        hist3 = hist1 * scale
+        self.assertArrayEqual(hist3.view(), a1)
+
+    def test_divide_by_scalar(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        scale = 2.0
+        a1 = hist1.view() / scale
+        hist3 = hist1 / scale
+        self.assertArrayEqual(hist3.view(), a1)
+
+    def test_pickle(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        hist2 = pickle.loads(pickle.dumps(hist1))
+        self.assertEqual(hist1, hist2)

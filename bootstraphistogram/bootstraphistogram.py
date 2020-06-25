@@ -56,7 +56,12 @@ class BootstrapHistogram:
         result._hist += other._hist
         return result
 
-    def __mul__(self, other):
+    def __mul__(self, other: float):
         result = deepcopy(self)
-        result._hist *= other._hist
+        result._hist *= other
+        return result
+
+    def __truediv__(self, other: float):
+        result = deepcopy(self)
+        result._hist /= other
         return result
