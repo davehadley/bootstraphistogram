@@ -48,7 +48,7 @@ class BootstrapHistogram:
         return self._hist.view(flow=flow)
 
     def __eq__(self, other: "BootstrapHistogram") -> bool:
-        return self._hist == other._hist
+        return isinstance(other, BootstrapHistogram) and self._hist == other._hist and self._nominal == other._nominal
 
     def __add__(self, other: "BootstrapHistogram") -> "BootstrapHistogram":
         result = deepcopy(self)

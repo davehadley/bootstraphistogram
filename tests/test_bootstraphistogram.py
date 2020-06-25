@@ -124,3 +124,10 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         hist1.fill(np.random.normal(size=1000))
         hist2 = pickle.loads(pickle.dumps(hist1))
         self.assertEqual(hist1, hist2)
+
+    def test_nominal(self):
+        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        data = np.random.normal(size=1000)
+        hist.fill(data)
+        arr, _ = np.histogram(data, bins=hist.axes[0].edges)
+        self.assertArrayEqual(hist.nominal.view(), arr)
