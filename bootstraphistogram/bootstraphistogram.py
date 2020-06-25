@@ -29,6 +29,9 @@ class BootstrapHistogram:
     def std(self, flow=False) -> np.ndarray:
         return np.std(self.view(flow=flow), axis=-1)
 
+    def percentile(self, q: float, flow=False, interpolation: str = "linear") -> np.ndarray:
+        return np.percentile(self.view(flow=flow), q, axis=-1, interpolation=interpolation)
+
     @property
     def numsamples(self) -> int:
         return len(self.axes[-1])
