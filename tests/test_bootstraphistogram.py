@@ -22,7 +22,7 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         data = np.random.normal(loc=0.0, scale=1.0,  size=size)
         hist.fill(data)
         x = hist.axes[0].centers
-        y = hist.view()[:,0]
+        y = hist.view()[:,np.random.randint(0, hist.numbootstrapsamples)]
         mean = np.average(x, weights=y)
         std = np.average((x - mean)**2, weights=y)
         self.assertAlmostEqual(mean, 0.0, delta=5.0*_standard_error_mean(size=size))
