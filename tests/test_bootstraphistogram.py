@@ -1,3 +1,4 @@
+import pickle
 import unittest
 from typing import Optional
 
@@ -17,7 +18,11 @@ def _standard_error_std(size, sigma=1.0):
 
 class TestBootstrapHistogram1D(unittest.TestCase):
 
-    def assertArrayAlmostEqual(self, actual: np.ndarray, expected: np.ndarray, delta: float, msg: Optional[str] = None):
+    def assertArrayEqual(self, actual: np.ndarray, expected: np.ndarray, msg: Optional[str] = None) -> None:
+        return self.assertTrue(np.array_equal(actual, expected), msg=msg)
+
+    def assertArrayAlmostEqual(self, actual: np.ndarray, expected: np.ndarray, delta: float,
+                               msg: Optional[str] = None) -> None:
         return self.assertTrue(np.all(np.abs(actual - expected) < delta), msg=msg)
 
     def test_contructor(self):
@@ -26,12 +31,12 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         return
 
     def test_fill(self):
-        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numbootstrapsamples=10)
+        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numsamples=10)
         size = 100000
         data = np.random.normal(loc=0.0, scale=1.0, size=size)
         hist.fill(data)
         x = hist.axes[0].centers
-        y = hist.view()[:, np.random.randint(0, hist.numbootstrapsamples)]
+        y = hist.view()[:, np.random.randint(0, hist.numsamples)]
         mean = np.average(x, weights=y)
         std = np.average((x - mean) ** 2, weights=y)
         binwidth = hist.axes[0].edges[1] - hist.axes[0].edges[0]
@@ -40,8 +45,8 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         return
 
     def test_samples(self):
-        numbootstrapsamples = 100
-        hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numbootstrapsamples=numbootstrapsamples)
+        numsamples = 100
+        hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=numsamples)
         size = 100000
         data = np.random.uniform(size=size)
         hist.fill(data)
@@ -49,14 +54,16 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         mean = np.average(y, axis=1)
         std = np.std(y, axis=1)
         nbins = len(hist.axes[0])
-        self.assertArrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size/nbins))
-        self.assertArrayAlmostEqual(std, np.sqrt(size / nbins), delta=5.0 * _standard_error_std(size=numbootstrapsamples, sigma=np.sqrt(size/nbins)))
+        self.assertArrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
+        self.assertArrayAlmostEqual(std, np.sqrt(size / nbins),
+                                    delta=5.0 * _standard_error_std(size=numsamples,
+                                                                    sigma=np.sqrt(size / nbins)))
         return
 
-    def test_numbootstrapsamples_property(self):
-        numbootstrapsamples = 100
-        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numbootstrapsamples=numbootstrapsamples)
-        self.assertEqual(hist.numbootstrapsamples, numbootstrapsamples)
+    def test_numsamples_property(self):
+        numsamples = 100
+        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numsamples=numsamples)
+        self.assertEqual(hist.numsamples, numsamples)
 
     def test_axes_property(self):
         axes = (bh.axis.Regular(100, -5.0, 5.0),)
@@ -64,7 +71,84 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         self.assertEqual(hist.axes[:-1], axes)
 
     def test_view_property(self):
-        numbootstrapsamples = 100
-        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numbootstrapsamples=numbootstrapsamples)
+        numsamples = 10
+        nbins = 5
+        hist = BootstrapHistogram(bh.axis.Regular(nbins, -5.0, 5.0), numsamples=numsamples)
         view = hist.view()
-        self.assertEqual(view)
+        self.assertArrayEqual(view, np.zeros(shape=(nbins, numsamples)))
+
+    def test_equality(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=123)
+        hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=123)
+        data = np.random.normal(size=1000)
+        hist1.fill(data)
+        hist2.fill(data)
+        self.assertEqual(hist1, hist2)
+
+    def test_inequality(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        data = np.random.normal(size=1000)
+        hist1.fill(data)
+        hist2.fill(data)
+        self.assertNotEqual(hist1, hist2)
+
+    def test_add(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        hist2.fill(np.random.normal(size=1000))
+        a1 = hist1.view()
+        a2 = hist2.view()
+        hist3 = hist1 + hist2
+        self.assertArrayEqual(hist3.view(), a1 + a2)
+
+    def test_multiply_by_scalar(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        scale = 2.0
+        a1 = hist1.view() * scale
+        hist3 = hist1 * scale
+        self.assertArrayEqual(hist3.view(), a1)
+
+    def test_divide_by_scalar(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        scale = 2.0
+        a1 = hist1.view() / scale
+        hist3 = hist1 / scale
+        self.assertArrayEqual(hist3.view(), a1)
+
+    def test_pickle(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist1.fill(np.random.normal(size=1000))
+        hist2 = pickle.loads(pickle.dumps(hist1))
+        self.assertEqual(hist1, hist2)
+
+    def test_nominal(self):
+        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        data = np.random.normal(size=1000)
+        hist.fill(data)
+        arr, _ = np.histogram(data, bins=hist.axes[0].edges)
+        self.assertArrayEqual(hist.nominal.view(), arr)
+
+    def test_mean(self):
+        size = 100000
+        hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100)
+        data = np.random.uniform(size=size)
+        hist.fill(data)
+        nbins = len(hist.axes[0])
+        self.assertArrayAlmostEqual(hist.mean(), size / nbins, delta=5.0 * np.sqrt(size / nbins))
+        return
+
+    def test_std(self):
+        numsamples = 100
+        hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=numsamples)
+        size = 100000
+        data = np.random.uniform(size=size)
+        hist.fill(data)
+        nbins = len(hist.axes[0])
+        self.assertArrayAlmostEqual(hist.std(), np.sqrt(size / nbins),
+                                    delta=5.0 * _standard_error_std(size=numsamples,
+                                                                    sigma=np.sqrt(size / nbins)))
+        return
