@@ -1,3 +1,3 @@
-# boostraphistogram
+# bootstraphistogram
 
 TODO

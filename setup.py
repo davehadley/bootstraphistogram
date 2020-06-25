@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setup(name="bootstraphistogram",
       version="0.1",
-      description="Poission boostrap histogram.",
+      description="Poisson bootstrap histogram.",
       long_description=long_description,
       long_description_content_type="text/markdown",
       url="https://github.com/davehadley/bootstraphistogram",
