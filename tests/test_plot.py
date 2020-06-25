@@ -43,7 +43,7 @@ class TestPlotBootstrapHistogram1D(unittest.TestCase):
     def test_plot_multi(self):
         hist = self.uniformhist()
         plot.fill_between(hist, color="blue", alpha=0.25)
-        plot.step(hist)
+        plot.step(hist, percentile=50.0)
         plot.errorbar(hist, color="black")
         plot.scatter(hist, color="red")
         plt.show()

@@ -1,6 +1,4 @@
-from collections import defaultdict
-from itertools import zip_longest
-from typing import Optional, Any, Iterable, List, Dict, Tuple
+from typing import Optional, Any, List, Tuple
 
 import numpy as np
 from matplotlib.axes import Axes as MplAxes
@@ -33,7 +31,7 @@ def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: A
 
 
 def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optional[MplAxes] = None, **kwargs: Any) -> \
-List[Line2D]:
+        List[Line2D]:
     ax = _getaxes(ax)
     edges = hist.axes[0].edges
     if percentile is not None:

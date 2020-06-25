@@ -10,6 +10,7 @@ url = "https://github.com/davehadley/bootstraphistogram"
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 import boost_histogram.axis as axis
+import bootstraphistogram.plot as plot
 
-__all__ = ["BootstrapHistogram", "axis"]
+__all__ = ["BootstrapHistogram", "axis", "plot"]
 

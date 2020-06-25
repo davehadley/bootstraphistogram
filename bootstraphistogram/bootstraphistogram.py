@@ -1,6 +1,5 @@
 from copy import deepcopy
-from ctypes import Array
-from typing import Any, Union, List, Tuple, Optional, Generator
+from typing import Any, Union, Tuple, Optional
 
 import boost_histogram as bh
 import numpy as np
