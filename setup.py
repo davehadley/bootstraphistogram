@@ -4,7 +4,7 @@ with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setup(name="bootstraphistogram",
-      version="0.1",
+      version="0.2",
       description="Poisson bootstrap histogram.",
       long_description=long_description,
       long_description_content_type="text/markdown",
