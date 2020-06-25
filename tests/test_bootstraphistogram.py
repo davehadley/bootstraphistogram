@@ -49,8 +49,10 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         mean = np.average(y, axis=1)
         std = np.std(y, axis=1)
         nbins = len(hist.axes[0])
-        self.assertArrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size/nbins))
-        self.assertArrayAlmostEqual(std, np.sqrt(size / nbins), delta=5.0 * _standard_error_std(size=numbootstrapsamples, sigma=np.sqrt(size/nbins)))
+        self.assertArrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
+        self.assertArrayAlmostEqual(std, np.sqrt(size / nbins),
+                                    delta=5.0 * _standard_error_std(size=numbootstrapsamples,
+                                                                    sigma=np.sqrt(size / nbins)))
         return
 
     def test_numbootstrapsamples_property(self):
@@ -64,7 +66,24 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         self.assertEqual(hist.axes[:-1], axes)
 
     def test_view_property(self):
-        numbootstrapsamples = 100
-        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numbootstrapsamples=numbootstrapsamples)
+        numbootstrapsamples = 10
+        nbins = 5
+        hist = BootstrapHistogram(bh.axis.Regular(nbins, -5.0, 5.0), numbootstrapsamples=numbootstrapsamples)
         view = hist.view()
-        self.assertEqual(view)
+        self.assertTrue(np.array_equal(view, np.zeros(shape=(nbins, numbootstrapsamples))))
+
+    def test_equality(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=123)
+        hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=123)
+        data = np.random.normal(size=1000)
+        hist1.fill(data)
+        hist2.fill(data)
+        self.assertEqual(hist1, hist2)
+
+    def test_inequality(self):
+        hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
+        data = np.random.normal(size=1000)
+        hist1.fill(data)
+        hist2.fill(data)
+        self.assertNotEqual(hist1, hist2)
