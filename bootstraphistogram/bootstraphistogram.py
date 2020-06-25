@@ -22,11 +22,19 @@ class BootstrapHistogram:
     def fill(self, *args: np.ndarray,
              weight: Optional[np.ndarray] = None,
              **kwargs: Any) -> "BootstrapHistogram":
-
+        #weight = np.ones(args.shape)
         for i in range(self.numbootstrapsamples):
-            w = np.random.poisson(1.0, size=args[0].shape)
-            ax = list(args) + [i]
-            self._hist.fill(*ax, weight=w, **kwargs)
+           w = np.random.poisson(1.0, size=args[0].shape)
+           if weight is not None:
+               w *= weight
+           self._hist.fill(*args, i, weight=w, **kwargs)
+        # turns out this is slower...
+        # shape = args[0].shape + (self.numbootstrapsamples,)
+        # ax = [np.tile(a, shape[-1]) for a in args]
+        # ax.append(np.repeat(self.axes[-1].centers, shape[:-1]))
+        # w = np.random.poisson(1.0, size=shape)
+        # w = w if weight is None else w*weight
+        # self._hist.fill(*ax, weight=w, **kwargs)
         return self
 
     def view(self, flow=False) -> Any:
