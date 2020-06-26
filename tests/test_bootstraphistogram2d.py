@@ -63,3 +63,20 @@ class TestBootstrapHistogram2D(unittest.TestCase):
                                     delta=5.0 * _standard_error_std(size=numsamples,
                                                                     sigma=np.sqrt(size / nbins)))
         return
+
+    def test_projection(self):
+        numsamples = 100
+        hist = BootstrapHistogram(bh.axis.Regular(10, 0.0, 1.0), bh.axis.Regular(10, 0.0, 1.0), numsamples=numsamples)
+        size = 100000
+        xdata = np.random.uniform(size=size)
+        ydata = np.random.uniform(size=size)
+        hist.fill(xdata, ydata)
+        hist = hist.project(0)
+        X = hist.view()
+        mean = np.average(X, axis=1)
+        std = np.std(X, axis=1)
+        nbins = len(hist.axes[0])
+        self.assertArrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
+        self.assertArrayAlmostEqual(std, np.sqrt(size / nbins),
+                                    delta=5.0 * _standard_error_std(size=numsamples,
+                                                                    sigma=np.sqrt(size / nbins)))
