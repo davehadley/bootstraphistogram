@@ -6,11 +6,6 @@ import numpy as np
 
 
 class BootstrapHistogram:
-    """This is the form of a docstring.
-
-    It can be spread over several lines.
-
-    """
     def __init__(self, *axes: bh.axis.Axis, numsamples: int = 1000,
                  rng: Union[int, np.random.Generator, None] = None, **kwargs: Any):
         axes = list(axes)
