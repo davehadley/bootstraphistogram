@@ -15,6 +15,7 @@ def _standard_error_mean(size, sigma=1.0):
 def _standard_error_std(size, sigma=1.0):
     return np.sqrt(sigma ** 2 / (2.0 * size))
 
+
 class TestBootstrapHistogram1D(unittest.TestCase):
     def assertArrayEqual(self, actual: np.ndarray, expected: np.ndarray, msg: Optional[str] = None) -> None:
         return self.assertTrue(np.array_equal(actual, expected), msg=msg)
