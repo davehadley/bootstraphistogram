@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import deepcopy, copy
 from typing import Any, Union, Tuple, Optional
 
 import boost_histogram as bh
@@ -171,4 +171,14 @@ class BootstrapHistogram:
     def __truediv__(self, other: float):
         result = deepcopy(self)
         result._hist /= other
+        return result
+
+    def project(self, *args: int) -> "BootstrapHistogram":
+        result = copy(self)
+        args = list(args)
+        result._nominal = result._nominal.project(*args)
+        sampleaxis = len(self.axes) - 1
+        if not sampleaxis in args:
+            args.append(sampleaxis)
+        result._hist = result._hist.project(*args)
         return result
