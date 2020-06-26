@@ -10,7 +10,7 @@ data = np.random.normal(size=1000)
 hist.fill(data)
 
 # plot the samples
-bootstraphistogram.plot.fill_between(hist, percentiles=(10.0, 90.0), color="blue", alpha=0.25)
+bootstraphistogram.plot.fill_between(hist, percentiles=(5.0, 95.0), color="blue", alpha=0.25)
 bootstraphistogram.plot.step(hist, percentile=50.0, ls="--")
 bootstraphistogram.plot.scatter(hist, color="red", alpha=0.25)
 bootstraphistogram.plot.errorbar(hist, color="black", ls="")
