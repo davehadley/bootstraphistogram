@@ -16,13 +16,14 @@
 
 
 # -- Project information -----------------------------------------------------
+import bootstraphistogram
 
 project = 'bootstraphistogram'
 copyright = '2020, David Hadley'
 author = 'David Hadley'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2'
+release = bootstraphistogram.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,6 +34,7 @@ release = '0.2'
 extensions = [
 'recommonmark',
 'sphinx_rtd_theme',
+'sphinx.ext.autodoc',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
