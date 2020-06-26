@@ -14,7 +14,7 @@ class TestPlotBootstrapHistogram2D(unittest.TestCase):
         hist.fill(np.random.normal(loc=mu, scale=sigma, size=size), np.random.normal(loc=mu, scale=sigma, size=size))
         return hist
 
-    def uniformhist(self, ax=(axis.Regular(100, 0.0, 1.0), axis.Regular(100, 0.0, 1.0)), size=100, numsamples=10, low=0.0, high=1.0):
+    def uniformhist(self, ax=(axis.Regular(10, 0.0, 1.0), axis.Regular(10, 0.0, 1.0)), size=100, numsamples=10, low=0.0, high=1.0):
         hist = BootstrapHistogram(*ax, numsamples=numsamples)
         hist.fill(np.random.uniform(low=0.0, high=1.0, size=size), np.random.uniform(low=0.0, high=1.0, size=size))
         return hist
