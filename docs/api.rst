@@ -8,7 +8,6 @@ bootstraphistogram.BootstrapHistogram
 
 .. autoclass:: bootstraphistogram.BootstrapHistogram
    :members:
-   :undoc-members:
 
 bootstraphistogram.plot
 -----------------------

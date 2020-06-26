@@ -35,6 +35,8 @@ extensions = [
 'recommonmark',
 'sphinx_rtd_theme',
 'sphinx.ext.autodoc',
+'sphinx.ext.intersphinx',
+'numpydoc',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -57,3 +59,8 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+intersphinx_mapping = {
+    'boost_histogram': ('https://boost-histogram.readthedocs.io/en/latest/', None),
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+                       }

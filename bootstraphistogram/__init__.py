@@ -1,6 +1,6 @@
 """bootstraphistogram
 
-TODO
+
 """
 
 from bootstraphistogram import _version
