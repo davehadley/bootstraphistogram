@@ -13,7 +13,7 @@ setup(name="bootstraphistogram",
       author_email="d.r.hadley@warwick.ac.uk",
       license="MIT",
       packages=["bootstraphistogram"],
-      install_requires=["boost-histogram>=0.7.0", "numpy>=1.18.5"],
+      install_requires=["boost-histogram>=0.7.0", "numpy>=1.18.5", "matplotlib>=3.2.0"],
       zip_safe=True,
       classifiers=[
           "Programming Language :: Python :: 3 :: Only",

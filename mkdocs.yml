@@ -1,0 +1,10 @@
+site_name: bootstaphistogram
+nav:
+  - Home : index.md
+plugins:
+  - mktheapidocs:
+      modules:
+        bootstraphistogram:
+          section: bootstaphistogram API
+          source_repo: https://github.com/davehadley/bootstraphistogram
+theme: readthedocs
