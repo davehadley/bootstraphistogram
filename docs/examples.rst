@@ -1,6 +1,12 @@
 Examples
 ========
 
+Filling a Histogram
+-------------------
+
+.. literalinclude:: examples/filling_example.py
+
+
 Error Bar Plot
 --------------
 
