@@ -10,6 +10,7 @@ Welcome to bootstraphistogram's documentation!
    :maxdepth: 3
    :caption: Contents:
 
+   examples
    api
 
 

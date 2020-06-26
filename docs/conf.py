@@ -35,6 +35,7 @@ extensions = [
     'sphinx_rtd_theme',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'matplotlib.sphinxext.plot_directive',
     'numpydoc',
 ]
 
