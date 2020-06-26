@@ -54,7 +54,8 @@ class BootstrapHistogram:
         return self._hist
 
     def mean(self, flow=False) -> np.ndarray:
-        """Binned sample mean.
+        """
+        Binned sample mean.
 
         Returns
         -------
@@ -64,7 +65,8 @@ class BootstrapHistogram:
         return np.mean(self.view(flow=flow), axis=-1)
 
     def std(self, flow=False) -> np.ndarray:
-        """Binned sample standard deviation.
+        """
+        Binned sample standard deviation.
 
         Returns
         -------
@@ -74,7 +76,8 @@ class BootstrapHistogram:
         return np.std(self.view(flow=flow), axis=-1)
 
     def percentile(self, q: float, flow=False, interpolation: str = "linear") -> np.ndarray:
-        """Binned q-th percentile.
+        """
+        Binned q-th percentile.
 
         Parameters
         ----------
@@ -101,7 +104,9 @@ class BootstrapHistogram:
     def fill(self, *args: np.ndarray,
              weight: Optional[np.ndarray] = None,
              **kwargs: Any) -> "BootstrapHistogram":
-        """Fill the histogram with some values.
+        """
+        Fill the histogram with some values.
+
 
         Parameters
         ----------
@@ -141,17 +146,17 @@ class BootstrapHistogram:
 
     def __add__(self, other: "BootstrapHistogram") -> "BootstrapHistogram":
         """
-            Add together the values of two bootstrap histograms together.
+        Add together the values of two bootstrap histograms together.
 
-            This is useful to merge results when parallellizing filling in a map-reduce pattern.
-            This histograms must have the same binning and the same number of bootstrap samples.
-            The merge histogram will have the same binning and the same number of bootstrap samples as the input
-            histograms.
+        This is useful to merge results when parallellizing filling in a map-reduce pattern.
+        This histograms must have the same binning and the same number of bootstrap samples.
+        The merge histogram will have the same binning and the same number of bootstrap samples as the input
+        histograms.
 
-            Returns
-            -------
-            hist : BootstrapHistogram
-                A new instance of the summed histogram.
+        Returns
+        -------
+        hist : BootstrapHistogram
+            A new instance of the summed histogram.
         """
         result = deepcopy(self)
         result._hist += other._hist
