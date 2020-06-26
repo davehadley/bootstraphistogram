@@ -46,3 +46,20 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         self.assertAlmostEqual(mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth)
         self.assertAlmostEqual(std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth)
         return
+
+    def test_samples(self):
+        numsamples = 100
+        hist = BootstrapHistogram(bh.axis.Regular(10, 0.0, 1.0), bh.axis.Regular(10, 0.0, 1.0), numsamples=numsamples)
+        size = 100000
+        xdata = np.random.uniform(size=size)
+        ydata = np.random.uniform(size=size)
+        hist.fill(xdata, ydata)
+        XY = hist.view()
+        mean = np.average(XY, axis=2)
+        std = np.std(XY, axis=2)
+        nbins = len(hist.axes[0]) * len(hist.axes[1])
+        self.assertArrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
+        self.assertArrayAlmostEqual(std, np.sqrt(size / nbins),
+                                    delta=5.0 * _standard_error_std(size=numsamples,
+                                                                    sigma=np.sqrt(size / nbins)))
+        return
