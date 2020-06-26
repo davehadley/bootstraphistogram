@@ -124,7 +124,7 @@ class BootstrapHistogram:
         """
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
-        shape = args[0].shape
+        shape = np.shape(args[0])
         for index in range(self.numsamples):
             w = self._random.poisson(1.0, size=shape)
             if weight is not None:
