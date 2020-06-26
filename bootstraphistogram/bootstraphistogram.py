@@ -160,7 +160,7 @@ class BootstrapHistogram:
         """
         result = deepcopy(self)
         result._hist += other._hist
-        result._hist += other._hist
+        result._nominal += other._nominal
         return result
 
     def __mul__(self, other: float):
