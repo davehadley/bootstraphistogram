@@ -174,6 +174,20 @@ class BootstrapHistogram:
         return result
 
     def project(self, *args: int) -> "BootstrapHistogram":
+        """
+        Reduce histogram dimensionality but summing over some dimensions.
+        The bootstrap sample axis is always kept by the operation.
+
+        Parameters
+        ----------
+        *args: int
+            The dimensions to be kept.
+
+        Returns
+        -------
+        hist: BootstrapHistogram
+            a copy of the histogram with only axes in *args and the bootstrap sample axes.
+        """
         result = copy(self)
         args = list(args)
         result._nominal = result._nominal.project(*args)

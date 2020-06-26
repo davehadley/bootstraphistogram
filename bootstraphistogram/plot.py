@@ -18,7 +18,7 @@ class HistogramRankError(ValueError):
 
 def _enforce1d(hist: BootstrapHistogram) -> None:
     if hist.nominal.rank != 1:
-        raise HistogramRankError("this function only supports plotting 1D histograms.")
+        raise HistogramRankError("this function only supports plotting 1D histograms. Try BoostrapHistogram.project to reduce inputs to 1D.")
 
 
 def _getaxes(ax: Optional[MplAxes]):
