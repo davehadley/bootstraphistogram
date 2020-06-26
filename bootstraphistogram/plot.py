@@ -20,7 +20,24 @@ def _getaxes(ax: Optional[MplAxes]):
     return ax
 
 
-def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any):
+def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any) -> Any:
+    """
+    Plot the bootstrap sample mean and standard deviation.
+
+    Parameters
+    ----------
+    hist: bootstraphistogram.BootstrapHistogram
+        the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
+    ax: Optional[matplotlib.axes.Axes]
+        :py:class:`matplotlib.axes.Axes` to plot on.
+    **kwargs : Any
+        passed on to :py:meth:`matplotlib.axes.Axes.errorbar`
+
+    Returns
+    -------
+    mplerrorbarresult : Any
+        returns the result of call to :py:meth:`matplotlib.axes.Axes.errorbar`.
+    """
     ax = _getaxes(ax)
     edges = hist.axes[0].edges
     x = hist.axes[0].centers
@@ -30,8 +47,26 @@ def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: A
     return ax.errorbar(x=x, y=y, xerr=xerr, yerr=yerr, **kwargs)
 
 
-def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optional[MplAxes] = None, **kwargs: Any) -> \
-        List[Line2D]:
+def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optional[MplAxes] = None, **kwargs: Any) -> Any:
+    """
+    Plot a curve corresponding to the histogram bootstrap sample mean (or the given percentile).
+
+    Parameters
+    ----------
+    hist: bootstraphistogram.BootstrapHistogram
+        the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
+    percentile: Optional[float]
+        the sample percentile to plot. A number between 0 and 100. 50 corresponds to the median. If ``None``, the mean is plotted.
+    ax: Optional[matplotlib.axes.Axes]
+        :py:class:`matplotlib.axes.Axes` to plot on.
+    **kwargs : Any
+        passed on to :py:meth:`matplotlib.axes.Axes.step`
+
+    Returns
+    -------
+    mplstepresult : Any
+        returns the result of call to :py:meth:`matplotlib.axes.Axes.step`.
+    """
     ax = _getaxes(ax)
     edges = hist.axes[0].edges
     if percentile is not None:
@@ -42,7 +77,26 @@ def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optio
 
 
 def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _PERCENTILES_1SIGMA,
-                 ax: Optional[MplAxes] = None, **kwargs: Any):
+                 ax: Optional[MplAxes] = None, **kwargs: Any) -> Any:
+    """
+    Fill the area between two percentiles.
+
+    Parameters
+    ----------
+    hist: bootstraphistogram.BootstrapHistogram
+        the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
+    percentiles: Tuple[float, float]
+        upper and lower percentile bounds to fill. A pair of numbers between 0 and 100. Defaults to fill an equal-tailed 68.27% interval.
+    ax: Optional[matplotlib.axes.Axes]
+        :py:class:`matplotlib.axes.Axes` to plot on.
+    **kwargs : Any
+        passed on to :py:meth:`matplotlib.axes.Axes.fill_between`
+
+    Returns
+    -------
+    mplfillbetweenresult : Any
+        returns the result of call to :py:meth:`matplotlib.axes.Axes.fill_between`.
+    """
     ax = _getaxes(ax)
     low, high = min(percentiles), max(percentiles)
     X = hist.axes[0].edges
@@ -53,7 +107,26 @@ def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _P
     return ax.fill_between(x=X, y1=Y1, y2=Y2, step="post", **kwargs)
 
 
-def scatter(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any):
+def scatter(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any) -> Any:#
+    """
+    Scatter plot of the bootstrap samples.
+
+    The scatter-point x-coordinate within a bin drawn from a uniform random distribution.
+
+    Parameters
+    ----------
+    hist: bootstraphistogram.BootstrapHistogram
+        the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
+    ax: Optional[matplotlib.axes.Axes]
+        :py:class:`matplotlib.axes.Axes` to plot on.
+    **kwargs : Any
+        passed on to :py:meth:`matplotlib.axes.Axes.fill_between`
+
+    Returns
+    -------
+    mplfillbetweenresult : Any
+        returns the result of call to :py:meth:`matplotlib.axes.Axes.scatter`.
+    """
     ax = _getaxes(ax)
     X = []
     Y = []

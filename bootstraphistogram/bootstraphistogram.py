@@ -6,6 +6,37 @@ import numpy as np
 
 
 class BootstrapHistogram:
+    """
+    A histogram with automatic Poission bootstrap resampling
+
+    The implementation is backed by boost :std:doc:`usage/histogram` (<https://github.com/scikit-hep/boost-histogram>) and
+    thus :py:class:`BoostrapHistogram` mimics the :py:class:`boost_histogram.Histogram` interface.
+
+    Parameters
+    ----------
+    *axes : boost_histogram.axis.Axis
+        Any number of :py:class:`boost_histogram.axis.Axis` objects that define the histogram binning. See <https://boost-histogram.readthedocs.io/en/latest/usage/axes.html>.
+    numsamples : int
+        The number of bootstrap samples. Increasing this number improves the accuracy of estimators derived from the
+        bootstrap samples, at the cost of increase memory and CPU usage.
+    rng : Union[int, np.random.Generator, None]
+        A numpy generator. If not provided, the numpy default from :py:func:`numpy.random.default_rng` will be used.
+    **kwargs : Any
+        Passed on to the :py:class:`boost_histogram.Histogram` constructor. :py:class:`numpy.ndarray`
+
+    Attributes
+    ----------
+    nominal : boost_histogram.Histogram
+        A histogram of the filled values, with no bootstrap samples.
+    samples : boost_histogram.Histogram
+        A histogram of the bootstrap samples. The last dimension corresponds to the bootstrap sample index and is
+        of size :py:attr:`BootstrapHistogram.numsamples`.
+    numsamples : int
+        Number of bootstrap re-samplings.
+    axes : Tuple[bh.axis.Axis, ...]
+        :py:class:`boost_histogram.axis.Axis` representing the histogram binning. The last dimension corresponds to the
+        bootstrap sample index.
+    """
     def __init__(self, *axes: bh.axis.Axis, numsamples: int = 1000,
                  rng: Union[int, np.random.Generator, None] = None, **kwargs: Any):
         axes = list(axes)
@@ -23,12 +54,43 @@ class BootstrapHistogram:
         return self._hist
 
     def mean(self, flow=False) -> np.ndarray:
+        """
+        Binned sample mean.
+
+        Returns
+        -------
+        numpy.ndarray
+            an array containing the mean value of all bootstrap samples for each bin in the histogram, .
+        """
         return np.mean(self.view(flow=flow), axis=-1)
 
     def std(self, flow=False) -> np.ndarray:
+        """
+        Binned sample standard deviation.
+
+        Returns
+        -------
+        numpy.ndarray
+            an array containing the standard deviation of all bootstrap sample values for each bin in the histogram, .
+        """
         return np.std(self.view(flow=flow), axis=-1)
 
     def percentile(self, q: float, flow=False, interpolation: str = "linear") -> np.ndarray:
+        """
+        Binned q-th percentile.
+
+        Parameters
+        ----------
+        q : float
+            The percentile, a number between 0 and 100 (inclusive).
+        interpolation : str
+            As :py:func:`numpy.percentile`.
+
+        Returns
+        -------
+        numpy.ndarray
+            an array containing the q-th percentile of all bootstrap samples for each bin in the histogram, .
+        """
         return np.percentile(self.view(flow=flow), q, axis=-1, interpolation=interpolation)
 
     @property
@@ -42,9 +104,27 @@ class BootstrapHistogram:
     def fill(self, *args: np.ndarray,
              weight: Optional[np.ndarray] = None,
              **kwargs: Any) -> "BootstrapHistogram":
+        """
+        Fill the histogram with some values.
+
+
+        Parameters
+        ----------
+        *args : np.ndarray
+            An 1D array containing coordinates for each dimension of the histogram.
+        weight : Optional[np.ndarray]
+            Entry weights used to fill the histogram.
+        **kwargs : Any
+            Passed on to :py:class:`boost_histogram.Histogram.fill`.
+
+        Returns
+        -------
+        self : BootstrapHistogram
+            Reference to this object. This is done to maintain consistency with `boost_histogram.Histogram`.
+        """
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
-        shape = args[0].shape
+        shape = np.shape(args[0])
         for index in range(self.numsamples):
             w = self._random.poisson(1.0, size=shape)
             if weight is not None:
@@ -53,13 +133,33 @@ class BootstrapHistogram:
         return self
 
     def view(self, flow=False) -> Any:
+        """
+        Return a view of the underlying histogram bootstrap sample values.
+        """
         return self._hist.view(flow=flow)
 
     def __eq__(self, other: "BootstrapHistogram") -> bool:
+        """
+        BootstrapHistogram's are considered to be equal if the data in their underlying histograms are equal.
+        """
         return isinstance(other, BootstrapHistogram) and self._hist == other._hist and self._nominal == other._nominal
 
     def __add__(self, other: "BootstrapHistogram") -> "BootstrapHistogram":
+        """
+        Add together the values of two bootstrap histograms together.
+
+        This is useful to merge results when parallellizing filling in a map-reduce pattern.
+        This histograms must have the same binning and the same number of bootstrap samples.
+        The merge histogram will have the same binning and the same number of bootstrap samples as the input
+        histograms.
+
+        Returns
+        -------
+        hist : BootstrapHistogram
+            A new instance of the summed histogram.
+        """
         result = deepcopy(self)
+        result._hist += other._hist
         result._hist += other._hist
         return result
 

@@ -3,8 +3,13 @@ from setuptools import setup
 with open("README.md", "r") as readme:
     long_description = readme.read()
 
+with open("bootstraphistogram/_version.py") as fp:
+    version = {}
+    exec(fp.read(), version)
+    version = version["__version__"]
+
 setup(name="bootstraphistogram",
-      version="0.1",
+      version=version,
       description="Poisson bootstrap histogram.",
       long_description=long_description,
       long_description_content_type="text/markdown",
