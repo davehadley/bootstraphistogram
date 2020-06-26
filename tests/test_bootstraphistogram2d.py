@@ -95,3 +95,16 @@ class TestBootstrapHistogram2D(unittest.TestCase):
         self.assertAlmostEqual(mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth)
         self.assertAlmostEqual(std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth)
         return
+
+    def test_projection3(self):
+        hist = BootstrapHistogram(bh.axis.Regular(3, 0.0, 3.0), bh.axis.Regular(2, 0.0, 2.0), numsamples=1000)
+        X = [0.0, 1.0, 1.0, 2.0, 2.0, 2.0]
+        Y = [0.0, 1.0, 0.0, 1.0, 0.0, 0.0]
+        hist.fill(X, Y)
+        hx = hist.project(0)
+        hy = hist.project(1)
+        self.assertArrayEqual(hx.nominal.view(), np.array([1.0, 2.0, 3.0]))
+        self.assertArrayEqual(hy.nominal.view(), np.array([4.0, 2.0]))
+        delta = 0.1
+        self.assertArrayAlmostEqual(np.average(hx.samples.view(), axis=1), np.array([1.0, 2.0, 3.0]), delta=delta)
+        self.assertArrayAlmostEqual(np.average(hy.samples.view(), axis=1), np.array([4.0, 2.0]), delta=delta)
