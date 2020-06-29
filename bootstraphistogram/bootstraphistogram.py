@@ -103,6 +103,7 @@ class BootstrapHistogram:
 
     def fill(self, *args: np.ndarray,
              weight: Optional[np.ndarray] = None,
+             key=None,
              **kwargs: Any) -> "BootstrapHistogram":
         """
         Fill the histogram with some values.
@@ -125,8 +126,13 @@ class BootstrapHistogram:
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = np.shape(args[0])
+        if key is not None:
+            generators = np.array([np.random.Generator(np.random.PCG64(k)) for k in key])
         for index in range(self.numsamples):
-            w = self._random.poisson(1.0, size=shape)
+            if key is None:
+                w = self._random.poisson(1.0, size=shape)
+            else:
+                w = np.fromiter((r.poisson(1.0) for r in generators), dtype=np.float, count=len(generators))
             if weight is not None:
                 w *= weight
             hist.fill(*args, index, weight=w, **kwargs)
