@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from bootstraphistogram import BootstrapHistogram, axis
 
+
 @np.vectorize
 def stddev_bootstrap_1d(nevents=100, numbins=1, numsamples=1000):
     # create a 2D histogram
@@ -51,6 +52,7 @@ def stddev_analytic(nevents=100, numbins=1):
     cov = correlation * sigma ** 2
     return np.sqrt(2.0 * sigma ** 2 + 2.0 * cov)
 
+
 def example2d():
     N = list(range(10, 1000, 100))
     plt.plot(N, stddev_analytic(N), label=r"$\sigma$ analytic")
@@ -61,6 +63,7 @@ def example2d():
     plt.legend()
     plt.show()
     return
+
 
 if __name__ == '__main__':
     example2d()

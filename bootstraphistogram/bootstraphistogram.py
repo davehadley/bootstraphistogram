@@ -118,7 +118,8 @@ class BootstrapHistogram:
         seed: Optional[np.ndarray]
             Per-element seed. Overrides the Generator given in the constructor and
             uses a pseudo-random number generator seeded by the given value.
-            This may be useful when filling multiple histograms with data that is not statistically independent.
+            This may be useful when filling multiple histograms with data that is not statistically independent
+            (where if may be desirable to seed the generator with a record ID).
         **kwargs : Any
             Passed on to :py:class:`boost_histogram.Histogram.fill`.
 
