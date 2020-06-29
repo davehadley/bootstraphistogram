@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import deepcopy, copy
 from typing import Any, Union, Tuple, Optional
 
 import boost_histogram as bh
@@ -103,6 +103,7 @@ class BootstrapHistogram:
 
     def fill(self, *args: np.ndarray,
              weight: Optional[np.ndarray] = None,
+             seed: Optional[np.ndarray]=None,
              **kwargs: Any) -> "BootstrapHistogram":
         """
         Fill the histogram with some values.
@@ -114,6 +115,11 @@ class BootstrapHistogram:
             An 1D array containing coordinates for each dimension of the histogram.
         weight : Optional[np.ndarray]
             Entry weights used to fill the histogram.
+        seed: Optional[np.ndarray]
+            Per-element seed. Overrides the Generator given in the constructor and
+            uses a pseudo-random number generator seeded by the given value.
+            This may be useful when filling multiple histograms with data that is not statistically independent
+            (where if may be desirable to seed the generator with a record ID).
         **kwargs : Any
             Passed on to :py:class:`boost_histogram.Histogram.fill`.
 
@@ -125,8 +131,13 @@ class BootstrapHistogram:
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = np.shape(args[0])
+        if seed is not None:
+            generators = np.array([np.random.Generator(np.random.PCG64(s)) for s in seed])
         for index in range(self.numsamples):
-            w = self._random.poisson(1.0, size=shape)
+            if seed is None:
+                w = self._random.poisson(1.0, size=shape)
+            else:
+                w = np.fromiter((r.poisson(1.0) for r in generators), dtype=np.float, count=len(generators))
             if weight is not None:
                 w *= weight
             hist.fill(*args, index, weight=w, **kwargs)
@@ -171,4 +182,28 @@ class BootstrapHistogram:
     def __truediv__(self, other: float):
         result = deepcopy(self)
         result._hist /= other
+        return result
+
+    def project(self, *args: int) -> "BootstrapHistogram":
+        """
+        Reduce histogram dimensionality but summing over some dimensions.
+        The bootstrap sample axis is always kept by the operation.
+
+        Parameters
+        ----------
+        *args: int
+            The dimensions to be kept.
+
+        Returns
+        -------
+        hist: BootstrapHistogram
+            a copy of the histogram with only axes in *args and the bootstrap sample axes.
+        """
+        result = copy(self)
+        args = list(args)
+        result._nominal = result._nominal.project(*args)
+        sampleaxis = len(self.axes) - 1
+        if not sampleaxis in args:
+            args.append(sampleaxis)
+        result._hist = result._hist.project(*args)
         return result

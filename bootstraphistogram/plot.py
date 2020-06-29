@@ -13,6 +13,13 @@ _PERCENTILES_2SIGMA = (50.0 - 95.45 / 2.0, 50.0 - 95.45 / 2.0)
 _PERCENTILES_MEDIAN_AND_1SIGMA = (_PERCENTILES_1SIGMA[0], 50.0, _PERCENTILES_1SIGMA[1])
 _PERCENTILES_MEDIAN_AND_2SIGMA = (_PERCENTILES_2SIGMA[0], 50.0, _PERCENTILES_2SIGMA[1])
 
+class HistogramRankError(ValueError):
+    pass
+
+def _enforce1d(hist: BootstrapHistogram) -> None:
+    if hist.nominal.rank != 1:
+        raise HistogramRankError("this function only supports plotting 1D histograms. Try BoostrapHistogram.project to reduce inputs to 1D.")
+
 
 def _getaxes(ax: Optional[MplAxes]):
     if ax is None:
@@ -38,6 +45,7 @@ def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: A
     mplerrorbarresult : Any
         returns the result of call to :py:meth:`matplotlib.axes.Axes.errorbar`.
     """
+    _enforce1d(hist)
     ax = _getaxes(ax)
     edges = hist.axes[0].edges
     x = hist.axes[0].centers
@@ -47,7 +55,8 @@ def errorbar(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: A
     return ax.errorbar(x=x, y=y, xerr=xerr, yerr=yerr, **kwargs)
 
 
-def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optional[MplAxes] = None, **kwargs: Any) -> Any:
+def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optional[MplAxes] = None,
+         **kwargs: Any) -> Any:
     """
     Plot a curve corresponding to the histogram bootstrap sample mean (or the given percentile).
 
@@ -67,6 +76,7 @@ def step(hist: BootstrapHistogram, percentile: Optional[float] = None, ax: Optio
     mplstepresult : Any
         returns the result of call to :py:meth:`matplotlib.axes.Axes.step`.
     """
+    _enforce1d(hist)
     ax = _getaxes(ax)
     edges = hist.axes[0].edges
     if percentile is not None:
@@ -97,6 +107,7 @@ def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _P
     mplfillbetweenresult : Any
         returns the result of call to :py:meth:`matplotlib.axes.Axes.fill_between`.
     """
+    _enforce1d(hist)
     ax = _getaxes(ax)
     low, high = min(percentiles), max(percentiles)
     X = hist.axes[0].edges
@@ -107,7 +118,7 @@ def fill_between(hist: BootstrapHistogram, percentiles: Tuple[float, float] = _P
     return ax.fill_between(x=X, y1=Y1, y2=Y2, step="post", **kwargs)
 
 
-def scatter(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any) -> Any:#
+def scatter(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any) -> Any:  #
     """
     Scatter plot of the bootstrap samples.
 
@@ -127,6 +138,7 @@ def scatter(hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: An
     mplfillbetweenresult : Any
         returns the result of call to :py:meth:`matplotlib.axes.Axes.scatter`.
     """
+    _enforce1d(hist)
     ax = _getaxes(ax)
     X = []
     Y = []
