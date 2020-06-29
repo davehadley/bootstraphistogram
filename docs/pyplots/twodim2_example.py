@@ -4,12 +4,11 @@ import matplotlib.pyplot as plt
 from bootstraphistogram import BootstrapHistogram, axis
 
 @np.vectorize
-def stddev_bootstrap_1d(nevents=100, numbins=1, numsamples=100):
+def stddev_bootstrap_1d(nevents=100, numbins=1, numsamples=1000):
     # create a 2D histogram
     histX = BootstrapHistogram(axis.Regular(numbins, 0.0, 1.0), numsamples=numsamples, rng=1234)
     histY = BootstrapHistogram(axis.Regular(numbins, 0.0, 1.0), numsamples=numsamples, rng=1234)
     # fill with some random data
-    eventID = np.arange(nevents)
     X = np.random.uniform(size=nevents)
     Y = np.random.uniform(size=nevents)
     histX = histX.fill(X)
@@ -19,22 +18,22 @@ def stddev_bootstrap_1d(nevents=100, numbins=1, numsamples=100):
 
 
 @np.vectorize
-def stddev_bootstrap_1d_eventID(nevents=100, numbins=1, numsamples=100):
+def stddev_bootstrap_1d_eventID(nevents=100, numbins=1, numsamples=1000):
     # create a 2D histogram
-    histX = BootstrapHistogram(axis.Regular(numbins, 0.0, 1.0), numsamples=numsamples, rng=1234)
-    histY = BootstrapHistogram(axis.Regular(numbins, 0.0, 1.0), numsamples=numsamples, rng=1234)
+    histX = BootstrapHistogram(axis.Regular(numbins, 0.0, 1.0), numsamples=numsamples)
+    histY = BootstrapHistogram(axis.Regular(numbins, 0.0, 1.0), numsamples=numsamples)
     # fill with some random data
     eventID = np.arange(nevents)
     X = np.random.uniform(size=nevents)
     Y = np.random.uniform(size=nevents)
-    histX = histX.fill(X, key=eventID)
-    histY = histY.fill(Y, key=eventID)
+    histX = histX.fill(X, seed=eventID)
+    histY = histY.fill(Y, seed=eventID)
     histSum = histX + histY
     return histSum.std()[0]
 
 
 @np.vectorize
-def stddev_bootstrap_2d(nevents=100, numbins=1, numsamples=100):
+def stddev_bootstrap_2d(nevents=100, numbins=1, numsamples=1000):
     # create a 2D histogram
     hist2d = BootstrapHistogram(axis.Regular(numbins, 0.0, 1.0), axis.Regular(numbins, 0.0, 1.0), numsamples=numsamples)
     # fill with some random data
@@ -53,7 +52,7 @@ def stddev_analytic(nevents=100, numbins=1):
     return np.sqrt(2.0 * sigma ** 2 + 2.0 * cov)
 
 def example2d():
-    N = list(range(10, 1000, 10))
+    N = list(range(10, 1000, 100))
     plt.plot(N, stddev_analytic(N), label=r"$\sigma$ analytic")
     plt.plot(N, stddev_bootstrap_1d(N), label=r"$\sigma$ bootstrap 1D")
     plt.plot(N, stddev_bootstrap_1d_eventID(N), label=r"$\sigma$ bootstrap 1D (event ID)")

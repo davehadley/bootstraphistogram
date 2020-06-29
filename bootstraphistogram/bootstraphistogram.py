@@ -103,7 +103,7 @@ class BootstrapHistogram:
 
     def fill(self, *args: np.ndarray,
              weight: Optional[np.ndarray] = None,
-             key=None,
+             seed: Optional[np.ndarray]=None,
              **kwargs: Any) -> "BootstrapHistogram":
         """
         Fill the histogram with some values.
@@ -115,6 +115,10 @@ class BootstrapHistogram:
             An 1D array containing coordinates for each dimension of the histogram.
         weight : Optional[np.ndarray]
             Entry weights used to fill the histogram.
+        seed: Optional[np.ndarray]
+            Per-element seed. Overrides the Generator given in the constructor and
+            uses a pseudo-random number generator seeded by the given value.
+            This may be useful when filling multiple histograms with data that is not statistically independent.
         **kwargs : Any
             Passed on to :py:class:`boost_histogram.Histogram.fill`.
 
@@ -126,10 +130,10 @@ class BootstrapHistogram:
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = np.shape(args[0])
-        if key is not None:
-            generators = np.array([np.random.Generator(np.random.PCG64(k)) for k in key])
+        if seed is not None:
+            generators = np.array([np.random.Generator(np.random.PCG64(s)) for s in seed])
         for index in range(self.numsamples):
-            if key is None:
+            if seed is None:
                 w = self._random.poisson(1.0, size=shape)
             else:
                 w = np.fromiter((r.poisson(1.0) for r in generators), dtype=np.float, count=len(generators))
