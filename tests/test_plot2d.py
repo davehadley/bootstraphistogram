@@ -28,7 +28,6 @@ class TestPlotBootstrapHistogram2D(unittest.TestCase):
     def test_plot_1d_errorbar_projection(self):
         hist = self.uniformhist()
         plot.errorbar(hist.project(np.random.choice([0, 1])))
-        plt.show()
         return
 
     def test_plot_1d_scatter(self):
@@ -40,7 +39,6 @@ class TestPlotBootstrapHistogram2D(unittest.TestCase):
     def test_plot_1d_scatter_projection(self):
         hist = self.uniformhist()
         plot.scatter(hist.project(np.random.choice([0, 1])))
-        plt.show()
         return
 
     def test_plot_1d_step(self):
@@ -52,7 +50,6 @@ class TestPlotBootstrapHistogram2D(unittest.TestCase):
     def test_plot_1d_step_projection(self):
         hist = self.uniformhist()
         plot.step(hist.project(np.random.choice([0, 1])))
-        plt.show()
         return
 
     def test_plot_1d_fillbetween(self):
@@ -64,5 +61,4 @@ class TestPlotBootstrapHistogram2D(unittest.TestCase):
     def test_plot_1d_fillbetween_projection(self):
         hist = self.uniformhist()
         plot.fill_between(hist.project(np.random.choice([0, 1])))
-        plt.show()
         return
