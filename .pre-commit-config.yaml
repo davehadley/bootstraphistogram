@@ -1,9 +1,21 @@
+default_stages: [commit]
+
 repos:
 -   repo: https://github.com/ambv/black
     rev: stable
     hooks:
     - id: black
       language_version: Python3.8
+      stages: [commit]
+
+
+- repo:  https://gitlab.com/pycqa/flake8
+  rev: 3.8.2
+  hooks:
+    - id: flake8
+      stages: [commit]
+
+
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v3.2.0
   hooks:
@@ -13,7 +25,16 @@ repos:
     - id: check-yaml
     - id: check-toml
     - id: mixed-line-ending
-- repo:  https://gitlab.com/pycqa/flake8
-  rev: 3.8.2
-  hooks:
-    - id: flake8
+      stages: [commit]
+
+
+#- repo: local
+#  hooks:
+#  - id: tests
+#    name: run tests
+#    entry: pytest tests
+#    language: system
+#    types: [python]
+#    stages: [push]
+#    pass_filenames: false
+#    always_run: true
