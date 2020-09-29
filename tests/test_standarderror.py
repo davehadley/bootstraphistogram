@@ -7,7 +7,9 @@ def _standard_error_mean(size, sigma=1.0):
 
 
 def _mc_error_mean(size, sigma=1.0, nmc=1000):
-    return np.std([np.average(np.random.normal(size=size, scale=sigma)) - 0.0 for _ in range(nmc)])
+    return np.std(
+        [np.average(np.random.normal(size=size, scale=sigma)) - 0.0 for _ in range(nmc)]
+    )
 
 
 def _standard_error_std(size, sigma=1.0):
@@ -15,7 +17,9 @@ def _standard_error_std(size, sigma=1.0):
 
 
 def _mc_error_std(size, sigma=1.0, nmc=1000):
-    return np.std([np.std(np.random.normal(size=size, scale=sigma)) - sigma for _ in range(nmc)])
+    return np.std(
+        [np.std(np.random.normal(size=size, scale=sigma)) - sigma for _ in range(nmc)]
+    )
 
 
 def main():
