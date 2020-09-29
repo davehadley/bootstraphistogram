@@ -17,12 +17,18 @@ def _standard_error_std(size, sigma=1.0):
 
 
 class TestBootstrapHistogram1D(unittest.TestCase):
-
-    def assertArrayEqual(self, actual: np.ndarray, expected: np.ndarray, msg: Optional[str] = None) -> None:
+    def assertArrayEqual(
+        self, actual: np.ndarray, expected: np.ndarray, msg: Optional[str] = None
+    ) -> None:
         return self.assertTrue(np.array_equal(actual, expected), msg=msg)
 
-    def assertArrayAlmostEqual(self, actual: np.ndarray, expected: np.ndarray, delta: float,
-                               msg: Optional[str] = None) -> None:
+    def assertArrayAlmostEqual(
+        self,
+        actual: np.ndarray,
+        expected: np.ndarray,
+        delta: float,
+        msg: Optional[str] = None,
+    ) -> None:
         return self.assertTrue(np.all(np.abs(actual - expected) < delta), msg=msg)
 
     def test_contructor(self):
@@ -40,8 +46,12 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         mean = np.average(x, weights=y)
         std = np.average((x - mean) ** 2, weights=y)
         binwidth = hist.axes[0].edges[1] - hist.axes[0].edges[0]
-        self.assertAlmostEqual(mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth)
-        self.assertAlmostEqual(std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth)
+        self.assertAlmostEqual(
+            mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth
+        )
+        self.assertAlmostEqual(
+            std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth
+        )
         return
 
     def test_samples(self):
@@ -54,15 +64,22 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         mean = np.average(y, axis=1)
         std = np.std(y, axis=1)
         nbins = len(hist.axes[0])
-        self.assertArrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
-        self.assertArrayAlmostEqual(std, np.sqrt(size / nbins),
-                                    delta=5.0 * _standard_error_std(size=numsamples,
-                                                                    sigma=np.sqrt(size / nbins)))
+        self.assertArrayAlmostEqual(
+            mean, size / nbins, delta=5.0 * np.sqrt(size / nbins)
+        )
+        self.assertArrayAlmostEqual(
+            std,
+            np.sqrt(size / nbins),
+            delta=5.0
+            * _standard_error_std(size=numsamples, sigma=np.sqrt(size / nbins)),
+        )
         return
 
     def test_numsamples_property(self):
         numsamples = 100
-        hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numsamples=numsamples)
+        hist = BootstrapHistogram(
+            bh.axis.Regular(100, -5.0, 5.0), numsamples=numsamples
+        )
         self.assertEqual(hist.numsamples, numsamples)
 
     def test_axes_property(self):
@@ -73,7 +90,9 @@ class TestBootstrapHistogram1D(unittest.TestCase):
     def test_view_property(self):
         numsamples = 10
         nbins = 5
-        hist = BootstrapHistogram(bh.axis.Regular(nbins, -5.0, 5.0), numsamples=numsamples)
+        hist = BootstrapHistogram(
+            bh.axis.Regular(nbins, -5.0, 5.0), numsamples=numsamples
+        )
         view = hist.view()
         self.assertArrayEqual(view, np.zeros(shape=(nbins, numsamples)))
 
@@ -138,7 +157,9 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         data = np.random.uniform(size=size)
         hist.fill(data)
         nbins = len(hist.axes[0])
-        self.assertArrayAlmostEqual(hist.mean(), size / nbins, delta=5.0 * np.sqrt(size / nbins))
+        self.assertArrayAlmostEqual(
+            hist.mean(), size / nbins, delta=5.0 * np.sqrt(size / nbins)
+        )
         return
 
     def test_std(self):
@@ -148,7 +169,10 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         data = np.random.uniform(size=size)
         hist.fill(data)
         nbins = len(hist.axes[0])
-        self.assertArrayAlmostEqual(hist.std(), np.sqrt(size / nbins),
-                                    delta=5.0 * _standard_error_std(size=numsamples,
-                                                                    sigma=np.sqrt(size / nbins)))
+        self.assertArrayAlmostEqual(
+            hist.std(),
+            np.sqrt(size / nbins),
+            delta=5.0
+            * _standard_error_std(size=numsamples, sigma=np.sqrt(size / nbins)),
+        )
         return

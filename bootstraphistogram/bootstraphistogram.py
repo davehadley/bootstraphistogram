@@ -37,8 +37,14 @@ class BootstrapHistogram:
         :py:class:`boost_histogram.axis.Axis` representing the histogram binning. The last dimension corresponds to the
         bootstrap sample index.
     """
-    def __init__(self, *axes: bh.axis.Axis, numsamples: int = 1000,
-                 rng: Union[int, np.random.Generator, None] = None, **kwargs: Any):
+
+    def __init__(
+        self,
+        *axes: bh.axis.Axis,
+        numsamples: int = 1000,
+        rng: Union[int, np.random.Generator, None] = None,
+        **kwargs: Any,
+    ):
         axes = list(axes)
         self._nominal = bh.Histogram(*axes, **kwargs)
         axes.append(bh.axis.Integer(0, numsamples))
@@ -75,7 +81,9 @@ class BootstrapHistogram:
         """
         return np.std(self.view(flow=flow), axis=-1)
 
-    def percentile(self, q: float, flow=False, interpolation: str = "linear") -> np.ndarray:
+    def percentile(
+        self, q: float, flow=False, interpolation: str = "linear"
+    ) -> np.ndarray:
         """
         Binned q-th percentile.
 
@@ -91,7 +99,9 @@ class BootstrapHistogram:
         numpy.ndarray
             an array containing the q-th percentile of all bootstrap samples for each bin in the histogram, .
         """
-        return np.percentile(self.view(flow=flow), q, axis=-1, interpolation=interpolation)
+        return np.percentile(
+            self.view(flow=flow), q, axis=-1, interpolation=interpolation
+        )
 
     @property
     def numsamples(self) -> int:
@@ -101,10 +111,13 @@ class BootstrapHistogram:
     def axes(self) -> Tuple[bh.axis.Axis, ...]:
         return self._hist.axes
 
-    def fill(self, *args: np.ndarray,
-             weight: Optional[np.ndarray] = None,
-             seed: Optional[np.ndarray]=None,
-             **kwargs: Any) -> "BootstrapHistogram":
+    def fill(
+        self,
+        *args: np.ndarray,
+        weight: Optional[np.ndarray] = None,
+        seed: Optional[np.ndarray] = None,
+        **kwargs: Any,
+    ) -> "BootstrapHistogram":
         """
         Fill the histogram with some values.
 
@@ -132,12 +145,18 @@ class BootstrapHistogram:
         hist = self._hist
         shape = np.shape(args[0])
         if seed is not None:
-            generators = np.array([np.random.Generator(np.random.PCG64(s)) for s in seed])
+            generators = np.array(
+                [np.random.Generator(np.random.PCG64(s)) for s in seed]
+            )
         for index in range(self.numsamples):
             if seed is None:
                 w = self._random.poisson(1.0, size=shape)
             else:
-                w = np.fromiter((r.poisson(1.0) for r in generators), dtype=np.float, count=len(generators))
+                w = np.fromiter(
+                    (r.poisson(1.0) for r in generators),
+                    dtype=np.float,
+                    count=len(generators),
+                )
             if weight is not None:
                 w *= weight
             hist.fill(*args, index, weight=w, **kwargs)
@@ -153,7 +172,11 @@ class BootstrapHistogram:
         """
         BootstrapHistogram's are considered to be equal if the data in their underlying histograms are equal.
         """
-        return isinstance(other, BootstrapHistogram) and self._hist == other._hist and self._nominal == other._nominal
+        return (
+            isinstance(other, BootstrapHistogram)
+            and self._hist == other._hist
+            and self._nominal == other._nominal
+        )
 
     def __add__(self, other: "BootstrapHistogram") -> "BootstrapHistogram":
         """
@@ -203,7 +226,7 @@ class BootstrapHistogram:
         args = list(args)
         result._nominal = result._nominal.project(*args)
         sampleaxis = len(self.axes) - 1
-        if not sampleaxis in args:
+        if sampleaxis not in args:
             args.append(sampleaxis)
         result._hist = result._hist.project(*args)
         return result
