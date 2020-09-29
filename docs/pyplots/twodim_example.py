@@ -7,13 +7,13 @@ import bootstraphistogram.plot
 
 def example2d():
     # create a 2D histogram
-    hist2d = BootstrapHistogram(axis.Regular(20, -5.0, 5.0), axis.Regular(20, -5.0, 5.0), numsamples=100)
+    hist2d = BootstrapHistogram(
+        axis.Regular(20, -5.0, 5.0), axis.Regular(20, -5.0, 5.0), numsamples=100
+    )
 
     # fill with some random, correlated data
     mu = [0.0, 1.0]
-    cov = [[1.0, 0.5],
-           [0.5, 2.0]
-           ]
+    cov = [[1.0, 0.5], [0.5, 2.0]]
     rawX, rawY = np.random.multivariate_normal(mu, cov, size=1000).T
     hist2d.fill(rawX, rawY)
 
@@ -45,5 +45,5 @@ def example2d():
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     example2d()
