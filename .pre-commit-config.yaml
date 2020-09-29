@@ -1,31 +1,39 @@
-default_stages: [commit]
+default_stages: [ commit ]
+
 
 repos:
--   repo: https://github.com/ambv/black
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.5.3
+    hooks:
+      - id: isort
+        stages: [ commit ]
+
+
+  - repo: https://github.com/ambv/black
     rev: stable
     hooks:
-    - id: black
-      language_version: Python3.8
-      stages: [commit]
+      - id: black
+        language_version: Python3.8
+        stages: [ commit ]
 
 
-- repo:  https://gitlab.com/pycqa/flake8
-  rev: 3.8.2
-  hooks:
-    - id: flake8
-      stages: [commit]
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.2
+    hooks:
+      - id: flake8
+        stages: [ commit ]
 
 
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.2.0
-  hooks:
-    - id: check-added-large-files
-    - id: check-ast
-    - id: check-merge-conflict
-    - id: check-yaml
-    - id: check-toml
-    - id: mixed-line-ending
-      stages: [commit]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: mixed-line-ending
+        stages: [ commit ]
 
 
 #- repo: local
