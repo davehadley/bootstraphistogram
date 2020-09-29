@@ -1,8 +1,8 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-from bootstraphistogram import BootstrapHistogram, axis
 import bootstraphistogram.plot
+from bootstraphistogram import BootstrapHistogram, axis
 
 
 def example2d():

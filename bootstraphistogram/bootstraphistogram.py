@@ -1,5 +1,5 @@
-from copy import deepcopy, copy
-from typing import Any, Union, Tuple, Optional
+from copy import copy, deepcopy
+from typing import Any, Optional, Tuple, Union
 
 import boost_histogram as bh
 import numpy as np

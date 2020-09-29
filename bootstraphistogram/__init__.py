@@ -6,10 +6,11 @@ Some basic plotting functions are provided in :py:mod:`bootstraphistogram.plot`
 
 """
 
+import boost_histogram.axis as axis
+
+import bootstraphistogram.plot as plot
 from bootstraphistogram import _version
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
-import boost_histogram.axis as axis
-import bootstraphistogram.plot as plot
 
 __version__ = _version.__version__
 __license__ = "MIT"
