@@ -21,24 +21,23 @@ class TestPlotBootstrapHistogram1D(unittest.TestCase):
     def test_plot_errorbar(self):
         hist = self.uniformhist()
         plot.errorbar(hist)
-        plt.show()
         return
 
     def test_plot_step(self):
         hist = self.uniformhist()
         plot.step(hist)
         plt.legend()
-        plt.show()
+        return
 
     def test_plot_fillbetween(self):
         hist = self.uniformhist()
         plot.fill_between(hist)
-        plt.show()
+        return
 
     def test_plot_scatter(self):
         hist = self.uniformhist()
         plot.scatter(hist)
-        plt.show()
+        return
 
     def test_plot_multi(self):
         hist = self.uniformhist()
@@ -46,4 +45,4 @@ class TestPlotBootstrapHistogram1D(unittest.TestCase):
         plot.step(hist, percentile=50.0)
         plot.errorbar(hist, color="black")
         plot.scatter(hist, color="red")
-        plt.show()
+        return
