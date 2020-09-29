@@ -42,6 +42,7 @@ class TestBootstrapHistogram2D(unittest.TestCase):
             bh.axis.Regular(100, -5.0, 5.0),
             bh.axis.Regular(100, -5.0, 5.0),
             numsamples=10,
+            rng=1234,
         )
         size = 100000
         x = np.random.normal(loc=0.0, scale=1.0, size=size)
@@ -73,6 +74,7 @@ class TestBootstrapHistogram2D(unittest.TestCase):
             bh.axis.Regular(10, 0.0, 1.0),
             bh.axis.Regular(10, 0.0, 1.0),
             numsamples=numsamples,
+            rng=1234,
         )
         size = 100000
         xdata = np.random.uniform(size=size)
@@ -99,6 +101,7 @@ class TestBootstrapHistogram2D(unittest.TestCase):
             bh.axis.Regular(10, 0.0, 1.0),
             bh.axis.Regular(10, 0.0, 1.0),
             numsamples=numsamples,
+            rng=1234,
         )
         size = 100000
         xdata = np.random.uniform(size=size)
@@ -124,6 +127,7 @@ class TestBootstrapHistogram2D(unittest.TestCase):
             bh.axis.Regular(100, -5.0, 5.0),
             bh.axis.Regular(100, -5.0, 5.0),
             numsamples=10,
+            rng=1234,
         )
         size = 100000
         x = np.random.normal(loc=0.0, scale=1.0, size=size)
@@ -144,7 +148,10 @@ class TestBootstrapHistogram2D(unittest.TestCase):
 
     def test_projection3(self):
         hist = BootstrapHistogram(
-            bh.axis.Regular(3, 0.0, 3.0), bh.axis.Regular(2, 0.0, 2.0), numsamples=1000
+            bh.axis.Regular(3, 0.0, 3.0),
+            bh.axis.Regular(2, 0.0, 2.0),
+            numsamples=1000,
+            rng=1234,
         )
         X = [0.0, 1.0, 1.0, 2.0, 2.0, 2.0]
         Y = [0.0, 1.0, 0.0, 1.0, 0.0, 0.0]
