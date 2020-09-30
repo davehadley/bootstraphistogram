@@ -1,10 +1,12 @@
+from typing import Any, Dict
+
 from setuptools import setup
 
 with open("README.md", "r") as readme:
     long_description = readme.read()
 
 with open("bootstraphistogram/_version.py") as fp:
-    version = {}
+    version: Dict[str, Any] = {}
     exec(fp.read(), version)
     version = version["__version__"]
 
