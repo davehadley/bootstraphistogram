@@ -1,0 +1,28 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  build-linux:
+    runs-on: ubunut-latest
+    strategy:
+      max-parallel: 5
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Setup Poetry
+        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+      - name: Install Dependencies
+        run: poetry install
+      - name: pytest
+        run: poetry run pytest
+      - name: black
+        run: poetry run black --check src tests
+      - name: mypy
+        run: poetry run mypy src tests
+      - name: flake8
+        run: poetry run flake8 src tests
