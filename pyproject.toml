@@ -1,2 +1,28 @@
+[tool.poetry]
+name = "bootstraphistogram"
+version = "0.5.0"
+description = "Poisson bootstrap histogram."
+license = "MIT"
+authors = ["David Hadley <davehadley@users.noreply.github.com>"]
+packages = [ { include = "bootstraphistogram", from = "src" } ]
+readme = "README.md"
+documentation = "https://bootstraphistogram.readthedocs.io/"
+homepage = "https://github.com/davehadley/bootstraphistogram"
+repository = "https://pypi.org/project/bootstraphistogram/"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+numpy = "^1.18.5"
+boost-histogram = "^0.7.0"
+matplotlib = "^3.1.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
 [tool.black]
 target_version = ['py36', 'py37', 'py38']
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
