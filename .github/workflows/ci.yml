@@ -29,6 +29,6 @@ jobs:
       - name: black
         run: source $HOME/.poetry/env && poetry run black --check src tests
       - name: mypy
-        run: source $HOME/.poetry/env && poetry run mypy src tests
+        run: source $HOME/.poetry/env && poetry run mypy --ignore-missing-imports src tests
       - name: flake8
         run: source $HOME/.poetry/env && poetry run flake8 src tests
