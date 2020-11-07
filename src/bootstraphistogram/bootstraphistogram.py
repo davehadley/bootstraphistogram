@@ -1,5 +1,5 @@
-from copy import deepcopy, copy
-from typing import Any, Union, Tuple, Optional
+from copy import copy, deepcopy
+from typing import Any, Optional, Tuple, Union
 
 import boost_histogram as bh
 import numpy as np
@@ -45,11 +45,11 @@ class BootstrapHistogram:
         rng: Union[int, np.random.Generator, None] = None,
         **kwargs: Any,
     ):
-        axes = list(axes)
-        self._nominal = bh.Histogram(*axes, **kwargs)
-        axes.append(bh.axis.Integer(0, numsamples))
+        axeslist = list(axes)
+        self._nominal = bh.Histogram(*axeslist, **kwargs)
+        axeslist.append(bh.axis.Integer(0, numsamples))
         self._random = np.random.default_rng(rng)
-        self._hist = bh.Histogram(*axes, **kwargs)
+        self._hist = bh.Histogram(*axeslist, **kwargs)
 
     @property
     def nominal(self) -> bh.Histogram:
@@ -168,7 +168,7 @@ class BootstrapHistogram:
         """
         return self._hist.view(flow=flow)
 
-    def __eq__(self, other: "BootstrapHistogram") -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         BootstrapHistogram's are considered to be equal if the data in their underlying histograms are equal.
         """
@@ -223,10 +223,10 @@ class BootstrapHistogram:
             a copy of the histogram with only axes in *args and the bootstrap sample axes.
         """
         result = copy(self)
-        args = list(args)
-        result._nominal = result._nominal.project(*args)
+        arglist = list(args)
+        result._nominal = result._nominal.project(*arglist)
         sampleaxis = len(self.axes) - 1
-        if sampleaxis not in args:
-            args.append(sampleaxis)
-        result._hist = result._hist.project(*args)
+        if sampleaxis not in arglist:
+            arglist.append(sampleaxis)
+        result._hist = result._hist.project(*arglist)
         return result

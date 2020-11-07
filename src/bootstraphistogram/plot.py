@@ -1,10 +1,10 @@
-from typing import Optional, Any, Tuple
+from typing import Any, Optional, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes as MplAxes
-import matplotlib.pyplot as plt
 
-from bootstraphistogram import BootstrapHistogram
+from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 
 _PERCENTILES_1SIGMA = (50.0 - 68.27 / 2.0, 50.0 + 68.27 / 2.0)
 _PERCENTILES_2SIGMA = (50.0 - 95.45 / 2.0, 50.0 - 95.45 / 2.0)

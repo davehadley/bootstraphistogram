@@ -1,0 +1,38 @@
+name: ci
+
+on: 
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Setup Poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          source $HOME/.poetry/env
+      - name: Install Dependencies
+        run: source $HOME/.poetry/env && poetry install
+      - name: pytest
+        run: source $HOME/.poetry/env && poetry run pytest
+      - name: black
+        run: source $HOME/.poetry/env && poetry run black --check src tests
+      - name: mypy
+        run: source $HOME/.poetry/env && poetry run mypy --ignore-missing-imports src tests
+      - name: flake8
+        run: source $HOME/.poetry/env && poetry run flake8 src tests
+      - name: Build
+        run: source $HOME/.poetry/env && poetry build
+      - name: Publish (dry-run)
+        run: source $HOME/.poetry/env && poetry publish --dry-run --username username --password password
