@@ -32,3 +32,7 @@ jobs:
         run: source $HOME/.poetry/env && poetry run mypy --ignore-missing-imports src tests
       - name: flake8
         run: source $HOME/.poetry/env && poetry run flake8 src tests
+      - name: Build
+        run: source $HOME/.poetry/env && poetry build
+      - name: Publish (dry-run)
+        run: source $HOME/.poetry/env && poetry publish --dry-run --username username --password password
