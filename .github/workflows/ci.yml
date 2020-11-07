@@ -1,6 +1,10 @@
 name: ci
 
-on: [push, pull_request]
+on: 
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
 
 jobs:
   build-linux:
@@ -15,14 +19,16 @@ jobs:
         with:
           python-version: 3.8
       - name: Setup Poetry
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          source $HOME/.poetry/env
       - name: Install Dependencies
-        run: poetry install
+        run: source $HOME/.poetry/env && poetry install
       - name: pytest
-        run: poetry run pytest
+        run: source $HOME/.poetry/env && poetry run pytest
       - name: black
-        run: poetry run black --check src tests
+        run: source $HOME/.poetry/env && poetry run black --check src tests
       - name: mypy
-        run: poetry run mypy src tests
+        run: source $HOME/.poetry/env && poetry run mypy src tests
       - name: flake8
-        run: poetry run flake8 src tests
+        run: source $HOME/.poetry/env && poetry run flake8 src tests
