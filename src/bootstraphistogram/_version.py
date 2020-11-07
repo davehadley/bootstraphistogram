@@ -2,7 +2,7 @@ def version(packagename: str) -> str:
     try:
         import importlib.metadata
 
-        return importlib.metadata.version(packagename)
+        return importlib.metadata.version(packagename)  # type: ignore
     except ImportError:
         import pkg_resources
 
