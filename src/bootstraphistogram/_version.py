@@ -1,6 +1,11 @@
-from importlib.metadata import version
+def version(packagename: str) -> str:
+    try:
+        import importlib.metadata
 
-try:
-    __version__ = version(__name__)
-except Exception:
-    __version__ = "unknown"
+        return importlib.metadata.version(packagename)
+    except ImportError:
+        import pkg_resources
+
+        return pkg_resources.get_distribution(packagename).version
+    except Exception:
+        return "unknown"
