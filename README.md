@@ -1,6 +1,5 @@
 # bootstraphistogram 
 
-[![Travis (.org) branch](https://img.shields.io/travis/davehadley/bootstraphistogram?label=Travis%20Build)](https://travis-ci.org/davehadley/bootstraphistogram)
 [![Github Build Status](https://img.shields.io/github/workflow/status/davehadley/bootstraphistogram/ci?label=Github%20Build)](https://github.com/davehadley/bootstraphistogram/actions?query=workflow%3Aci)
 [![Documentation Status](https://readthedocs.org/projects/bootstraphistogram/badge/?version=latest)](https://bootstraphistogram.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/bootstraphistogram)](https://pypi.org/project/bootstraphistogram/)
