@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bootstraphistogram"
-version = "0.5.0"
+version = "0.6.0"
 description = "Poisson bootstrap histogram."
 license = "MIT"
 authors = ["David Hadley <davehadley@users.noreply.github.com>"]
@@ -13,7 +13,7 @@ repository = "https://pypi.org/project/bootstraphistogram/"
 [tool.poetry.dependencies]
 python = "^3.6.1"
 numpy = "^1.19.0"
-boost-histogram = "^0.7.0"
+boost-histogram = ">=0.7.0"
 matplotlib = "^3.1"
 
 [tool.poetry.dev-dependencies]
