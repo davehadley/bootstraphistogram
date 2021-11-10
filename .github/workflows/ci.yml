@@ -10,6 +10,18 @@ on:
   - cron: '41 3 * * 0'
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+      - name: Run pre-commit checks
+        run: pip install pre-commit && pre-commit install && pre-commit run --all
+      - name: Build docs
+        run: pip install -r docs/requirements.txt && sphinx-build -W docs docs-build
   build-linux:
     runs-on: ubuntu-latest
     strategy:
@@ -34,7 +46,3 @@ jobs:
         run: source $HOME/.poetry/env && poetry build
       - name: Publish (dry-run)
         run: source $HOME/.poetry/env && poetry publish --dry-run --username username --password password
-      - name: Run pre-commit checks
-        run: source $HOME/.poetry/env && poetry run pre-commit install && poetry run pre-commit run --all
-      - name: Build docs
-        run: source $HOME/.poetry/env && poetry run pip install -r docs/requirements.txt && poetry run sphinx-build -W docs docs-build
