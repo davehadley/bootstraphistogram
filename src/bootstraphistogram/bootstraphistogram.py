@@ -211,8 +211,8 @@ class BootstrapHistogram:
 
     def project(self, *args: int) -> "BootstrapHistogram":
         """
-        Reduce histogram dimensionality but summing over some dimensions.
-        The bootstrap sample axis is always kept by the operation.
+        Reduce histogram dimensionality by summing over some dimensions.
+        The bootstrap sample axis is always kept by this operation.
 
         Parameters
         ----------

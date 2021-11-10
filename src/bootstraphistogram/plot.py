@@ -137,7 +137,7 @@ def scatter(
     """
     Scatter plot of the bootstrap samples.
 
-    The scatter-point x-coordinate within a bin drawn from a uniform random distribution.
+    The scatter-point x-coordinate within a bin drawn is from a uniform random distribution.
 
     Parameters
     ----------
