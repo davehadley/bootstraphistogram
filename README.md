@@ -23,17 +23,22 @@ For usage instructions and examples see the documentation at: <https://bootstrap
 
 For Linux systems, the provided setup script will setup a suitable python virtual environment 
 and install pre-commit-hooks.
-```
+```bash
 source setup.sh
 ```
 
 This package uses [Python poetry](https://python-poetry.org/) for dependency management.
-```
+```bash
 poetry install
 ```
 
 To run the unit tests run:
-```
+```bash
 poetry run pytest tests
 ```
 
+To build documentation run:
+```bash
+poetry pip install sphinx && \
+poetry run sphinx-build -W docs docs-build
+```
