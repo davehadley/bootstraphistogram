@@ -1,6 +1,10 @@
 
+poetry.lock
+
+.vscode/
 .idea/
 venv/
+.env
 
 *.pyc
 *.egg-info/

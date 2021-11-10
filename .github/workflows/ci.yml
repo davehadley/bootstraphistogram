@@ -5,19 +5,35 @@ on:
     branches: [master, dev]
   pull_request:
     branches: [master, dev]
+  schedule:
+  # run once per week in case latest version of depedencies or compiler cause issues
+  - cron: '41 3 * * 0'
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+      - name: Run pre-commit checks
+        run: pip install pre-commit && pre-commit install && pre-commit run --all
+      - name: Build docs
+        run: pip install . && pip install -r docs/requirements.txt && sphinx-build -W docs docs-build
   build-linux:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 5
+      matrix:
+        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
     
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: '${{ matrix.python-version }}'
       - name: Setup Poetry
         run: |
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
@@ -26,12 +42,6 @@ jobs:
         run: source $HOME/.poetry/env && poetry install
       - name: pytest
         run: source $HOME/.poetry/env && poetry run pytest
-      - name: black
-        run: source $HOME/.poetry/env && poetry run black --check src tests
-      - name: mypy
-        run: source $HOME/.poetry/env && poetry run mypy --ignore-missing-imports src tests
-      - name: flake8
-        run: source $HOME/.poetry/env && poetry run flake8 src tests
       - name: Build
         run: source $HOME/.poetry/env && poetry build
       - name: Publish (dry-run)

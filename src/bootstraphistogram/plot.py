@@ -18,7 +18,7 @@ class HistogramRankError(ValueError):
 
 
 def _enforce1d(hist: BootstrapHistogram) -> None:
-    if hist.nominal.rank != 1:
+    if len(hist.nominal.shape) != 1:
         raise HistogramRankError(
             "this function only supports plotting 1D histograms. Try BoostrapHistogram.project to reduce inputs to 1D."
         )
@@ -137,7 +137,7 @@ def scatter(
     """
     Scatter plot of the bootstrap samples.
 
-    The scatter-point x-coordinate within a bin drawn from a uniform random distribution.
+    The scatter-point x-coordinate within a bin drawn is from a uniform random distribution.
 
     Parameters
     ----------
