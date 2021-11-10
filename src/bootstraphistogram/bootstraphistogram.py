@@ -4,6 +4,11 @@ from typing import Any, Optional, Tuple, Union
 import boost_histogram as bh
 import numpy as np
 
+try:
+    from numpy.typing import ArrayLike
+except Exception:
+    ArrayLike = np.ndarray
+
 
 class BootstrapHistogram:
     """
@@ -113,9 +118,9 @@ class BootstrapHistogram:
 
     def fill(
         self,
-        *args: np.ndarray,
-        weight: Optional[np.ndarray] = None,
-        seed: Optional[np.ndarray] = None,
+        *args: ArrayLike,
+        weight: Optional[ArrayLike] = None,
+        seed: Optional[ArrayLike] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
         """
@@ -124,11 +129,11 @@ class BootstrapHistogram:
 
         Parameters
         ----------
-        *args : np.ndarray
+        *args : ArrayLike
             An 1D array containing coordinates for each dimension of the histogram.
-        weight : Optional[np.ndarray]
+        weight : Optional[ArrayLike]
             Entry weights used to fill the histogram.
-        seed: Optional[np.ndarray]
+        seed: Optional[ArrayLike]
             Per-element seed. Overrides the Generator given in the constructor and
             uses a pseudo-random number generator seeded by the given value.
             This may be useful when filling multiple histograms with data that is not statistically independent
