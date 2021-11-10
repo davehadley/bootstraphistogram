@@ -25,7 +25,6 @@ then
     && python -m pip install poetry pre-commit
 fi
 . ${SCRIPT_PATH}/venv/bin/activate
-{% endif %}
 
 export PATH=${SCRIPT_PATH}/bin:${PATH}
 
