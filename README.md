@@ -7,4 +7,33 @@
 [![Last Commit](https://img.shields.io/github/last-commit/davehadley/bootstraphistogram/dev)](https://github.com/davehadley/bootstraphistogram)
 
 A python package that provides a multi-dimensional histogram with automatic Poisson bootstrap re-sampling.
-See the documentation at: <https://bootstraphistogram.readthedocs.io>.
+
+# Installation
+
+Install with pip from PyPI:
+```bash
+python -m pip install bootstraphistogram
+```
+
+# Usage Instructions
+
+For usage instructions and examples see the documentation at: <https://bootstraphistogram.readthedocs.io>.
+
+# Development Instructions
+
+For Linux systems, the provided setup script will setup a suitable python virtual environment 
+and install pre-commit-hooks.
+```
+source setup.sh
+```
+
+This package uses [Python poetry](https://python-poetry.org/) for dependency management.
+```
+poetry install
+```
+
+To run the unit tests run:
+```
+poetry run pytest tests
+```
+
