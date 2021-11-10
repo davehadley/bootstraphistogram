@@ -126,7 +126,7 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         hist3 = hist1 + hist2
         self.assertArrayEqual(hist3.view(), a1 + a2)
 
-    def test_multiply_by_scalar(self):
+    def test_multiply_by_scalar_samples(self):
         hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
         hist1.fill(np.random.normal(size=1000))
         scale = 2.0
@@ -134,13 +134,32 @@ class TestBootstrapHistogram1D(unittest.TestCase):
         hist3 = hist1 * scale
         self.assertArrayEqual(hist3.view(), a1)
 
-    def test_divide_by_scalar(self):
+    def test_divide_by_scalar_samples(self):
         hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
         hist1.fill(np.random.normal(size=1000))
         scale = 2.0
         a1 = hist1.view() / scale
         hist3 = hist1 / scale
         self.assertArrayEqual(hist3.view(), a1)
+
+    def test_multiply_by_scalar_nominal(self):
+        hist = BootstrapHistogram(
+            bh.axis.Regular(1, -1.0, 1.0), numsamples=10, rng=1234
+        )
+        hist.fill(0.0)
+        scaled = hist * 2.0
+        self.assertArrayEqual(list(hist.nominal.view()), [1.0])
+        self.assertArrayEqual(list(scaled.nominal.view()), [2.0])
+
+    def test_divide_by_scalar_nominal(self):
+        hist = BootstrapHistogram(
+            bh.axis.Regular(1, -1.0, 1.0), numsamples=10, rng=1234
+        )
+        hist.fill(0.0)
+        hist.fill(0.0)
+        scaled = hist / 2.0
+        self.assertArrayEqual(list(hist.nominal.view()), [2.0])
+        self.assertArrayEqual(list(scaled.nominal.view()), [1.0])
 
     def test_pickle(self):
         hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)

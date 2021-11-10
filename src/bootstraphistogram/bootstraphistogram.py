@@ -200,11 +200,13 @@ class BootstrapHistogram:
     def __mul__(self, other: float):
         result = deepcopy(self)
         result._hist *= other
+        result._nominal *= other
         return result
 
     def __truediv__(self, other: float):
         result = deepcopy(self)
         result._hist /= other
+        result._nominal /= other
         return result
 
     def project(self, *args: int) -> "BootstrapHistogram":
