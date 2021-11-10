@@ -19,6 +19,7 @@ matplotlib = "^3.1"
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 pre-commit = "^2.15.0"
+tox = "^3.24.4"
 
 [tool.black]
 target_version = ['py36', 'py37', 'py38']
