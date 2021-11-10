@@ -5,6 +5,9 @@ on:
     branches: [master, dev]
   pull_request:
     branches: [master, dev]
+  schedule:
+  # run once per week in case latest version of depedencies or compiler cause issues
+  - cron: '41 3 * * 0'
 
 jobs:
   build-linux:
@@ -34,5 +37,7 @@ jobs:
         run: source $HOME/.poetry/env && poetry run flake8 src tests
       - name: Build
         run: source $HOME/.poetry/env && poetry build
+      - name: Run pre-commit checks
+        run: source $HOME/.poetry/env && pre-commit install && pre-commit run --all
       - name: Publish (dry-run)
         run: source $HOME/.poetry/env && poetry publish --dry-run --username username --password password
