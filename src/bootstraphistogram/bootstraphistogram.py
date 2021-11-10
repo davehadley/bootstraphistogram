@@ -222,7 +222,7 @@ class BootstrapHistogram:
         Returns
         -------
         hist: BootstrapHistogram
-            a copy of the histogram with only axes in *args and the bootstrap sample axes.
+            a copy of the histogram with only axes in args and the bootstrap sample axes.
         """
         result = copy(self)
         arglist = list(args)
