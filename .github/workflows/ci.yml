@@ -35,6 +35,6 @@ jobs:
       - name: Publish (dry-run)
         run: source $HOME/.poetry/env && poetry publish --dry-run --username username --password password
       - name: Run pre-commit checks
-        run: source $HOME/.poetry/env && pre-commit install && pre-commit run --all
+        run: source $HOME/.poetry/env && poetry run pre-commit install && poetry run pre-commit run --all
       - name: Build docs
-        run: source $HOME/.poetry/env && poetry pip install -r docs/requirements.txt && poetry sphinx-build -W docs docs-build
+        run: source $HOME/.poetry/env && poetry run pip install -r docs/requirements.txt && poetry run sphinx-build -W docs docs-build
