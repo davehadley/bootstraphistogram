@@ -208,10 +208,14 @@ class BootstrapHistogram:
         result._nominal *= other
         return result
 
-    def __truediv__(self, other: float):
+    def __truediv__(self, other: Union["BootstrapHistogram", ArrayLike, float]):
         result = deepcopy(self)
-        result._hist /= other
-        result._nominal /= other
+        if isinstance(other, BootstrapHistogram):
+            result._hist /= other._hist
+            result._nominal /= other._nominal
+        else:
+            result._hist /= other
+            result._nominal /= other
         return result
 
     def project(self, *args: int) -> "BootstrapHistogram":
