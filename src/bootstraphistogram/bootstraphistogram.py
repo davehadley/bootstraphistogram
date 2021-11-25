@@ -163,7 +163,7 @@ class BootstrapHistogram:
                     count=len(generators),
                 )
             if weight is not None:
-                w *= weight
+                w = w * weight
             hist.fill(*args, index, weight=w, **kwargs)
         return self
 

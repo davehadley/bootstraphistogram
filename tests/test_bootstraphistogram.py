@@ -247,7 +247,7 @@ def test_std():
 
 def test_fill_with_float_weights():
     hist = BootstrapHistogram(bh.axis.Regular(5, 0.0, 5.0), rng=1234)
-    values = [0.0, 1.0, 2.0, 3.0, 3.0, 5.0]
+    values = [0.0, 1.0, 2.0, 3.0, 3.0, 4.0]
     weights = [0.0, 1.0, 2.0, 3.0, 4.0, -1.0]
     hist.fill(values, weight=weights)
     assert np.array_equal(hist.nominal.view(), [0.0, 1.0, 2.0, 7.0, -1.0])
@@ -255,7 +255,7 @@ def test_fill_with_float_weights():
 
 def test_fill_with_integer_weights():
     hist = BootstrapHistogram(bh.axis.Regular(5, 0.0, 5.0), rng=1234)
-    values = [0.0, 1.0, 2.0, 3.0, 3.0, 5.0]
+    values = [0.0, 1.0, 2.0, 3.0, 3.0, 4.0]
     weights = [0, 1, 2, 3, 4, -1]
     hist.fill(values, weight=weights)
     assert np.array_equal(hist.nominal.view(), [0.0, 1.0, 2.0, 7.0, -1.0])
