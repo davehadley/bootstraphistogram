@@ -14,7 +14,7 @@ def _standard_error_std(size, sigma=1.0):
     return np.sqrt(sigma ** 2 / (2.0 * size))
 
 
-def arrayAlmostEqual(
+def array_almost_equal(
     actual: np.ndarray,
     expected: np.ndarray,
     delta: float,
@@ -38,10 +38,10 @@ def test_fill():
     mean = np.average(x, weights=y)
     std = np.average((x - mean) ** 2, weights=y)
     binwidth = hist.axes[0].edges[1] - hist.axes[0].edges[0]
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth
     )
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth
     )
     return
@@ -59,8 +59,8 @@ def test_samples():
     mean = np.average(y, axis=1)
     std = np.std(y, axis=1)
     nbins = len(hist.axes[0])
-    assert arrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
-    assert arrayAlmostEqual(
+    assert array_almost_equal(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
+    assert array_almost_equal(
         std,
         np.sqrt(size / nbins),
         delta=5.0 * _standard_error_std(size=numsamples, sigma=np.sqrt(size / nbins)),
@@ -177,7 +177,7 @@ def test_mean():
     data = np.random.uniform(size=size)
     hist.fill(data)
     nbins = len(hist.axes[0])
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         hist.mean(), size / nbins, delta=5.0 * np.sqrt(size / nbins)
     )
     return
@@ -192,7 +192,7 @@ def test_std():
     data = np.random.uniform(size=size)
     hist.fill(data)
     nbins = len(hist.axes[0])
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         hist.std(),
         np.sqrt(size / nbins),
         delta=5.0 * _standard_error_std(size=numsamples, sigma=np.sqrt(size / nbins)),

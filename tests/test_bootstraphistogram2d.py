@@ -14,7 +14,7 @@ def _standard_error_std(size, sigma=1.0):
     return np.sqrt(sigma ** 2 / (2.0 * size))
 
 
-def arrayAlmostEqual(
+def array_almost_equal(
     actual: np.ndarray,
     expected: np.ndarray,
     delta: float,
@@ -46,18 +46,18 @@ def test_fill():
     binwidth = hist.axes[0].edges[1] - hist.axes[0].edges[0]
     mean = np.average(hist.axes[0].centers, weights=np.sum(y, axis=1))
     std = np.average((hist.axes[0].centers - mean) ** 2, weights=np.sum(y, axis=1))
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth
     )
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth
     )
     mean = np.average(hist.axes[1].centers, weights=np.sum(y, axis=0))
     std = np.average((hist.axes[1].centers - mean) ** 2, weights=np.sum(y, axis=0))
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth
     )
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth
     )
     return
@@ -79,8 +79,8 @@ def test_samples():
     mean = np.average(XY, axis=2)
     std = np.std(XY, axis=2)
     nbins = len(hist.axes[0]) * len(hist.axes[1])
-    assert arrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
-    assert arrayAlmostEqual(
+    assert array_almost_equal(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
+    assert array_almost_equal(
         std,
         np.sqrt(size / nbins),
         delta=5.0 * _standard_error_std(size=numsamples, sigma=np.sqrt(size / nbins)),
@@ -105,8 +105,8 @@ def test_projection():
     mean = np.average(X, axis=1)
     std = np.std(X, axis=1)
     nbins = len(hist.axes[0])
-    assert arrayAlmostEqual(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
-    assert arrayAlmostEqual(
+    assert array_almost_equal(mean, size / nbins, delta=5.0 * np.sqrt(size / nbins))
+    assert array_almost_equal(
         std,
         np.sqrt(size / nbins),
         delta=5.0 * _standard_error_std(size=numsamples, sigma=np.sqrt(size / nbins)),
@@ -129,10 +129,10 @@ def test_projection2():
     binwidth = hist.axes[0].edges[1] - hist.axes[0].edges[0]
     mean = np.average(hist.axes[0].centers, weights=y)
     std = np.average((hist.axes[0].centers - mean) ** 2, weights=y)
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         mean, 0.0, delta=5.0 * _standard_error_mean(size=size) + binwidth
     )
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         std, 1.0, delta=5.0 * _standard_error_std(size=size) + binwidth
     )
     return
@@ -153,11 +153,11 @@ def test_projection3():
     assert np.array_equal(hx.nominal.view(), np.array([1.0, 2.0, 3.0]))
     assert np.array_equal(hy.nominal.view(), np.array([4.0, 2.0]))
     delta = 0.1
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         np.average(hx.samples.view(), axis=1),
         np.array([1.0, 2.0, 3.0]),
         delta=delta,
     )
-    assert arrayAlmostEqual(
+    assert array_almost_equal(
         np.average(hy.samples.view(), axis=1), np.array([4.0, 2.0]), delta=delta
     )
