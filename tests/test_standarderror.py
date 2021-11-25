@@ -22,7 +22,7 @@ def _mc_error_std(size, sigma=1.0, nmc=1000):
     )
 
 
-def main():
+def test_standarderror():
     fig = plt.figure()
     ax = fig.add_subplot(211)
     X = np.arange(10, 100, 10)
@@ -45,4 +45,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    test_standarderror()
