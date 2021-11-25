@@ -14,7 +14,6 @@ def _getexamplefiles():
     ]
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("examplefile", _getexamplefiles())
 def test_example(examplefile):
     check_call(["python", examplefile])

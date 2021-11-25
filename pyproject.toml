@@ -17,7 +17,7 @@ boost-histogram = ">=1.0.0"
 matplotlib = "^3.1"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^6.0"
 pre-commit = "^2.15.0"
 tox = "^3.24.4"
 
@@ -28,3 +28,7 @@ target_version = ['py36', 'py37', 'py38']
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = " --doctest-modules "
+testpaths = ["tests", "src", "docs"]
