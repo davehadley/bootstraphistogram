@@ -183,13 +183,15 @@ class BootstrapHistogram:
             and self._nominal == other._nominal
         )
 
-    def __add__(self, other: "BootstrapHistogram") -> "BootstrapHistogram":
+    def __add__(
+        self, other: Union["BootstrapHistogram", ArrayLike, float]
+    ) -> "BootstrapHistogram":
         """
         Add together the values of two bootstrap histograms together.
 
         This is useful to merge results when parallellizing filling in a map-reduce pattern.
         This histograms must have the same binning and the same number of bootstrap samples.
-        The merge histogram will have the same binning and the same number of bootstrap samples as the input
+        The merged histogram will have the same binning and the same number of bootstrap samples as the input
         histograms.
 
         Returns
@@ -198,15 +200,45 @@ class BootstrapHistogram:
             A new instance of the summed histogram.
         """
         result = deepcopy(self)
-        result._hist += other._hist
-        result._nominal += other._nominal
+        if isinstance(other, BootstrapHistogram):
+            result._hist += other._hist
+            result._nominal += other._nominal
+        else:
+            result._hist += other
+            result._nominal += other
         return result
 
-    def __mul__(self, other: float):
+    def __radd__(
+        self, other: Union["BootstrapHistogram", ArrayLike, float]
+    ) -> "BootstrapHistogram":
+        return self + other
+
+    def __sub__(
+        self, other: Union["BootstrapHistogram", ArrayLike, float]
+    ) -> "BootstrapHistogram":
         result = deepcopy(self)
-        result._hist *= other
-        result._nominal *= other
+        if isinstance(other, BootstrapHistogram):
+            result._hist -= other._hist
+            result._nominal -= other._nominal
+        else:
+            result._hist -= other
+            result._nominal -= other
         return result
+
+    def __mul__(self, other: Union["BootstrapHistogram", ArrayLike, float]):
+        result = deepcopy(self)
+        if isinstance(other, BootstrapHistogram):
+            result._hist *= other._hist
+            result._nominal *= other._nominal
+        else:
+            result._hist *= other
+            result._nominal *= other
+        return result
+
+    def __rmul__(
+        self, other: Union["BootstrapHistogram", ArrayLike, float]
+    ) -> "BootstrapHistogram":
+        return self * other
 
     def __truediv__(self, other: Union["BootstrapHistogram", ArrayLike, float]):
         result = deepcopy(self)

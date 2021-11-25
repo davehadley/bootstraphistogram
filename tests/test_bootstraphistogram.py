@@ -156,6 +156,52 @@ def test_divide_by_scalar_nominal():
     assert np.array_equal(list(scaled.nominal.view()), [1.0])
 
 
+def test_multiply_by_histogram():
+    hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist1.fill([0.0, 1.0, 0.0, 1.0])
+    hist2.fill([0.0, 1.0, 0.0, 1.0, 0.0, 1.0])
+    hist3 = hist1 * hist2
+    assert np.array_equal(hist3.nominal.view(), [6.0, 6.0])
+    assert np.array_equal(hist3.samples, hist1.samples * hist2.samples)
+
+
+def test_add_by_histogram():
+    hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist1.fill([0.0, 1.0, 0.0, 1.0])
+    hist2.fill([0.0, 1.0, 0.0, 1.0, 0.0, 1.0])
+    hist3 = hist1 + hist2
+    assert np.array_equal(hist3.nominal.view(), [5.0, 5.0])
+    assert np.array_equal(hist3.samples, hist1.samples + hist2.samples)
+
+
+def test_add_scalar():
+    hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist1.fill([0.0, 0.0, 1.0])
+    hist3 = hist1 + 2
+    assert np.array_equal(hist3.nominal.view(), [4.0, 3.0])
+    assert np.array_equal(hist3.samples, hist1.samples + 2)
+
+
+def test_sub_by_histogram():
+    hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist1.fill([0.0, 1.0, 0.0, 1.0])
+    hist2.fill([0.0, 1.0, 0.0, 1.0, 0.0, 1.0])
+    hist3 = hist1 - hist2
+    assert np.array_equal(hist3.nominal.view(), [-1.0, -1.0])
+    assert np.array_equal(hist3.samples, hist1.samples - hist2.samples)
+
+
+def test_sub_scalar():
+    hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist1.fill([0.0, 0.0, 1.0])
+    hist3 = hist1 - 2
+    assert np.array_equal(hist3.nominal.view(), [0.0, -1.0])
+    assert np.array_equal(hist3.samples, hist1.samples - 2)
+
+
 def test_pickle():
     hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
     hist1.fill(np.random.normal(size=1000))
