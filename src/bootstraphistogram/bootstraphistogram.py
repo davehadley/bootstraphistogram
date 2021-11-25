@@ -146,6 +146,46 @@ class BootstrapHistogram:
         self : BootstrapHistogram
             Reference to this object. This is done to maintain consistency with `boost_histogram.Histogram`.
         """
+        return self._fill_slow(*args, weight=weight, seed=seed, **kwargs)
+
+    def _fill_fast(
+        self,
+        *args: ArrayLike,
+        weight: Optional[ArrayLike] = None,
+        seed: Optional[ArrayLike] = None,
+        **kwargs: Any,
+    ) -> "BootstrapHistogram":
+        self._nominal.fill(*args, weight=weight, **kwargs)
+        hist = self._hist
+        shape = (self.numsamples,) + np.shape(args[0])
+        if seed is not None:
+            generators = np.array(
+                [np.random.Generator(np.random.PCG64(s)) for s in seed]
+            )
+        args = tuple(np.broadcast_to(values, shape).T.flat for values in args)
+        index = np.broadcast_to(np.arange(self.numsamples), reversed(shape)).flat
+        if seed is None:
+            w = self._random.poisson(1.0, size=shape)
+        else:
+            w = np.array(
+                [r.poisson(1.0, size=(self.numsamples,)) for r in generators],
+                dtype=np.float,
+            )
+        w = w.T
+        if weight is not None:
+            weight = np.broadcast_to(weight, shape).T
+            w = w * weight
+        # print(f"debug shape={shape} {[a.shape for a in args]} {w.shape} {index.shape}")
+        hist.fill(*args, index, weight=w.flat, **kwargs)
+        return self
+
+    def _fill_slow(
+        self,
+        *args: ArrayLike,
+        weight: Optional[ArrayLike] = None,
+        seed: Optional[ArrayLike] = None,
+        **kwargs: Any,
+    ) -> "BootstrapHistogram":
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = np.shape(args[0])
