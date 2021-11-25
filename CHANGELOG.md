@@ -1,3 +1,9 @@
+# 0.8.0 (2021-11-25)
+
+  - Implement binary operations (`+`, `-`, `*`, `/`).
+  - Fix issue [#5](https://github.com/davehadley/bootstraphistogram/issues/5).
+  - Improve tests.
+
 # 0.7.0 (2021-11-10)
 
 - Change BootstrapHistogram API to accept `numpy.ArrayLike` as input. 
