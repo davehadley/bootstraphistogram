@@ -1,7 +1,9 @@
+import itertools
 import pickle
 
 import boost_histogram as bh
 import numpy as np
+import pytest
 
 from bootstraphistogram import BootstrapHistogram
 
@@ -273,6 +275,23 @@ def test_fill_with_integer_weights():
     weights = [0, 1, 2, 3, 4, -1]
     hist.fill(values, weight=weights)
     assert np.array_equal(hist.nominal.view(), [0.0, 1.0, 2.0, 7.0, -1.0])
+
+
+@pytest.mark.parametrize(
+    "numsamples,numarray", list(itertools.product([1, 2, 10], repeat=2))
+)
+@pytest.mark.parametrize(
+    "withweight", [True, False], ids=["withweight", "withoutweight"]
+)
+@pytest.mark.parametrize("withseed", [True, False], ids=["withseed", "withoutseed"])
+def test_fill_with_various_length_arrays(numsamples, numarray, withseed, withweight):
+    hist = BootstrapHistogram(
+        bh.axis.Regular(5, 0.0, 1.0), numsamples=numsamples, rng=1234
+    )
+    values = np.random.uniform(size=numarray)
+    weight = np.random.uniform(size=numarray) if withweight else None
+    seed = np.arange(numarray) if withseed else None
+    hist.fill(values, weight=weight, seed=seed)
 
 
 def test_fill_with_record_id_seed():
