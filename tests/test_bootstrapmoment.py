@@ -1,6 +1,7 @@
 import itertools
 
 import numpy as np
+import pytest
 
 from bootstraphistogram import BootstrapMoment
 
@@ -69,3 +70,20 @@ def test_bootstrap_correlations_many_samples():
     cor = np.corrcoef([w, t1, t2, t3])
     for row, column in itertools.combinations(range(4), 2):
         assert cor[row, column] > 0.5
+
+
+@pytest.mark.parametrize("with_weights", [False, True])
+def test_bootstrap_correlations_gaussian(with_weights: bool):
+    moment = BootstrapMoment(numsamples=100, rng=1234)
+    values = np.random.default_rng(5678).normal(size=100000)
+    if with_weights:
+        weight = np.random.uniform(size=values.shape)
+        moment.fill(values, weight=weight)
+    else:
+        moment.fill(values)
+    assert moment.mean().nominal == pytest.approx(0.0, abs=0.01)
+    assert np.average(moment.mean().samples) == pytest.approx(0.0, abs=0.01)
+    assert moment.std().nominal == pytest.approx(1.0, abs=0.01)
+    assert np.average(moment.std().samples) == pytest.approx(1.0, abs=0.01)
+    assert moment.skewness().nominal == pytest.approx(0.0, abs=0.01)
+    assert np.average(moment.skewness().samples) == pytest.approx(0.0, abs=0.01)
