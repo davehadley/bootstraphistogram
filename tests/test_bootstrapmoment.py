@@ -1,4 +1,5 @@
 import itertools
+from typing import Callable
 
 import numpy as np
 import pytest
@@ -46,7 +47,7 @@ def test_bootstrapmoment_skewness():
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
 
 
-def test_bootstrap_correlations():
+def test_bootstrapmoment_correlations():
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = [1]
     moment.fill(values)
@@ -59,7 +60,7 @@ def test_bootstrap_correlations():
         assert abs(cor[row, column] - 1.0) < 1e-6
 
 
-def test_bootstrap_correlations_many_samples():
+def test_bootstrapmoment_correlations_many_samples():
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -72,18 +73,45 @@ def test_bootstrap_correlations_many_samples():
         assert cor[row, column] > 0.5
 
 
-@pytest.mark.parametrize("with_weights", [False, True])
-def test_bootstrap_correlations_gaussian(with_weights: bool):
+@pytest.mark.parametrize(
+    "generator,mu,sigma,skewness",
+    [
+        (lambda: np.random.default_rng(5678).normal(size=100000), 0.0, 1.0, 0.0),
+        (
+            lambda: np.random.default_rng(5678).uniform(size=100000),
+            0.5,
+            np.sqrt(1.0 / 12.0),
+            0.0,
+        ),
+        (lambda: np.random.default_rng(5678).exponential(size=100000), 1.0, 1.0, 2.0),
+    ],
+    ids=["gaussian", "uniform", "exponential"],
+)
+@pytest.mark.parametrize(
+    "with_weights", [False, True], ids=["without_weights", "with_weights"]
+)
+def test_bootstrapmoment_standard_distributions(
+    with_weights: bool, generator: Callable[[], np.ndarray], mu, sigma, skewness
+):
     moment = BootstrapMoment(numsamples=100, rng=1234)
-    values = np.random.default_rng(5678).normal(size=100000)
+    values = generator()
     if with_weights:
         weight = np.random.uniform(size=values.shape)
         moment.fill(values, weight=weight)
     else:
         moment.fill(values)
-    assert moment.mean().nominal == pytest.approx(0.0, abs=0.01)
-    assert np.average(moment.mean().samples) == pytest.approx(0.0, abs=0.01)
-    assert moment.std().nominal == pytest.approx(1.0, abs=0.01)
-    assert np.average(moment.std().samples) == pytest.approx(1.0, abs=0.01)
-    assert moment.skewness().nominal == pytest.approx(0.0, abs=0.01)
-    assert np.average(moment.skewness().samples) == pytest.approx(0.0, abs=0.01)
+    tolerance = 0.01
+    assert moment.mean().nominal == pytest.approx(mu, rel=tolerance, abs=tolerance)
+    assert np.average(moment.mean().samples) == pytest.approx(
+        mu, rel=tolerance, abs=tolerance
+    )
+    assert moment.std().nominal == pytest.approx(sigma, rel=tolerance, abs=tolerance)
+    assert np.average(moment.std().samples) == pytest.approx(
+        sigma, rel=tolerance, abs=tolerance
+    )
+    assert moment.skewness().nominal == pytest.approx(
+        skewness, rel=tolerance, abs=tolerance
+    )
+    assert np.average(moment.skewness().samples) == pytest.approx(
+        skewness, rel=tolerance, abs=tolerance
+    )
