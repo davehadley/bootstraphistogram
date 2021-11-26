@@ -11,7 +11,7 @@ def array_almost_equal(
     return np.all(np.abs(actual - expected) < delta)
 
 
-def test_boostrapmoment_mean():
+def test_bootstrapmoment_mean():
     moment = BootstrapMoment(numsamples=1000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -19,7 +19,7 @@ def test_boostrapmoment_mean():
     assert abs(np.average(moment.mean().samples) - np.average(values)) < 1.0
 
 
-def test_boostrapmoment_std_deviation():
+def test_bootstrapmoment_std_deviation():
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -35,9 +35,29 @@ def _skewness(array: np.ndarray) -> np.ndarray:
     return np.average(((array - mu) / sigma) ** 3)
 
 
-def test_boostrapmoment_skewness():
+def test_bootstrapmoment_skewness():
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
     assert abs(moment.skewness().nominal - _skewness(values)) < 0.01
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
+
+
+def test_bootstap_correlations():
+    moment = BootstrapMoment(numsamples=10000, rng=1234)
+    values = np.arange(100, dtype=float)
+    moment.fill(values)
+    mu, sigma, skew = (
+        moment.mean().samples,
+        moment.std().samples,
+        moment.skewness().samples,
+    )
+    # import matplotlib.pyplot as plt
+    # plt.scatter(mu, sigma)
+    # plt.savefig("correlation.png")
+    assert (
+        np.corrcoef(mu, sigma)[0, 1]
+        == np.corrcoef(mu, skew)[0, 1]
+        == np.corrcoef(sigma, skew)[0, 1]
+        == 1.0
+    )
