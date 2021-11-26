@@ -14,7 +14,7 @@ from bootstraphistogram import BootstrapHistogram
 def test_boostraphistogram_fast_and_slow_filling_give_identical_results(
     withweight, withseed
 ):
-    size = 100000
+    size = 10000
     hist_slow = BootstrapHistogram(
         bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=1234
     )

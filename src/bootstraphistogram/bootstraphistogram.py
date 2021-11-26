@@ -146,7 +146,34 @@ class BootstrapHistogram:
         self : BootstrapHistogram
             Reference to this object. This is done to maintain consistency with `boost_histogram.Histogram`.
         """
-        return self._fill_fast(*args, weight=weight, seed=seed, **kwargs)
+        args = tuple(np.asarray(a) for a in args)
+        weight = np.asarray(weight) if weight is not None else None
+        seed = np.asarray(seed) if seed is not None else None
+        self._validate_fill_inputs(args, weight, seed)
+        if self.numsamples * args[0].size < 1000000:
+            return self._fill_fast(*args, weight=weight, seed=seed, **kwargs)
+        else:
+            return self._fill_slow(*args, weight=weight, seed=seed, **kwargs)
+
+    def _validate_fill_inputs(
+        self,
+        args: ArrayLike,
+        weight: Optional[ArrayLike] = None,
+        seed: Optional[ArrayLike] = None,
+    ) -> None:
+        if len(args) <= 0:
+            raise ValueError("fill must be provided at least 1 array as input.")
+        sizes = [a.size for a in args]
+        if not all(s == sizes[0] for s in sizes):
+            raise ValueError("all arrays must have the same length.")
+        if weight is not None and weight.size != sizes[0]:
+            raise ValueError(
+                "weight array size does not match the other input array sizes."
+            )
+        if seed is not None and seed.size != sizes[0]:
+            raise ValueError(
+                "seed array size does not match the other input array sizes."
+            )
 
     def _fill_fast(
         self,
@@ -155,9 +182,6 @@ class BootstrapHistogram:
         seed: Optional[ArrayLike] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
-        args = tuple(np.asarray(a) for a in args)
-        weight = np.asarray(weight) if weight is not None else None
-        seed = np.asarray(seed) if seed is not None else None
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = (self.numsamples,) + np.shape(args[0])
@@ -189,9 +213,6 @@ class BootstrapHistogram:
         seed: Optional[ArrayLike] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
-        args = tuple(np.asarray(a) for a in args)
-        weight = np.asarray(weight) if weight is not None else None
-        seed = np.asarray(seed) if seed is not None else None
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = np.shape(args[0])
