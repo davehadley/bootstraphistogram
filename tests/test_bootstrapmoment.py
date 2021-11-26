@@ -8,14 +8,6 @@ import pytest
 from bootstraphistogram import BootstrapMoment
 
 
-def array_almost_equal(
-    actual: np.ndarray,
-    expected: np.ndarray,
-    delta: float,
-) -> None:
-    return np.all(np.abs(actual - expected) < delta)
-
-
 def test_bootstrapmoment_numsamples():
     numsamples = 1000
     moment = BootstrapMoment(numsamples=numsamples, rng=1234)
