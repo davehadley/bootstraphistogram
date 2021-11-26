@@ -83,7 +83,7 @@ def test_bootstrapmoment_correlations_many_samples():
             np.sqrt(1.0 / 12.0),
             0.0,
         ),
-        (lambda: np.random.default_rng(5678).exponential(size=100000), 1.0, 1.0, 2.0),
+        (lambda: np.random.default_rng(5678).exponential(size=200000), 1.0, 1.0, 2.0),
     ],
     ids=["gaussian", "uniform", "exponential"],
 )
