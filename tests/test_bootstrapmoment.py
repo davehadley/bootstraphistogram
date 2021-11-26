@@ -1,4 +1,5 @@
 import itertools
+import pickle
 from typing import Callable
 
 import numpy as np
@@ -82,6 +83,14 @@ def test_bootstrapmoment_correlations_many_samples():
         assert cor[row, column] > 0.5
 
 
+def test_pickle():
+    moment1 = BootstrapMoment(numsamples=1000, rng=1234)
+    values = np.arange(100, dtype=float)
+    moment1.fill(values)
+    moment2 = pickle.loads(pickle.dumps(moment1))
+    assert moment1 == moment2
+
+
 @pytest.mark.parametrize(
     "generator,mu,sigma,skewness",
     [
@@ -105,7 +114,7 @@ def test_bootstrapmoment_standard_distributions(
     moment = BootstrapMoment(numsamples=100, rng=1234)
     values = generator()
     if with_weights:
-        weight = np.random.uniform(size=values.shape)
+        weight = np.random.default_rng(91011).uniform(size=values.shape)
         moment.fill(values, weight=weight)
     else:
         moment.fill(values)

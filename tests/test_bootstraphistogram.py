@@ -259,3 +259,14 @@ def test_fill_with_integer_weights():
     weights = [0, 1, 2, 3, 4, -1]
     hist.fill(values, weight=weights)
     assert np.array_equal(hist.nominal.view(), [0.0, 1.0, 2.0, 7.0, -1.0])
+
+
+def test_fill_with_record_id_seed():
+    hist1 = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=1234)
+    hist2 = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=5678)
+    data = np.random.uniform(size=10000)
+    seed = np.arange(len(data))
+    hist1.fill(data, seed=seed)
+    hist2.fill(data, seed=seed)
+    assert hist1 == hist2
+    return

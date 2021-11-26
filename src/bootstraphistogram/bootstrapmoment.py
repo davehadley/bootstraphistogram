@@ -32,6 +32,15 @@ class BootstrapMoment:
         self._sum_wt2 = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
         self._sum_wt3 = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
 
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, BootstrapMoment)
+            and self._sum_w == other._sum_w
+            and self._sum_wt == other._sum_wt
+            and self._sum_wt2 == other._sum_wt2
+            and self._sum_wt3 == other._sum_wt3
+        )
+
     def fill(
         self,
         values: ArrayLike,
