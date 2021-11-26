@@ -278,7 +278,7 @@ def test_fill_with_integer_weights():
 
 
 @pytest.mark.parametrize(
-    "numsamples,numarray", list(itertools.product([1, 2, 10], repeat=2))
+    "numsamples,numarray", list(itertools.product([1, 2, 3], repeat=2))
 )
 @pytest.mark.parametrize(
     "withweight", [True, False], ids=["withweight", "withoutweight"]
@@ -302,4 +302,3 @@ def test_fill_with_record_id_seed():
     hist1.fill(data, seed=seed)
     hist2.fill(data, seed=seed)
     assert hist1 == hist2
-    return

@@ -146,7 +146,7 @@ class BootstrapHistogram:
         self : BootstrapHistogram
             Reference to this object. This is done to maintain consistency with `boost_histogram.Histogram`.
         """
-        return self._fill_slow(*args, weight=weight, seed=seed, **kwargs)
+        return self._fill_fast(*args, weight=weight, seed=seed, **kwargs)
 
     def _fill_fast(
         self,
@@ -155,11 +155,14 @@ class BootstrapHistogram:
         seed: Optional[ArrayLike] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
+        args = tuple(np.asarray(a) for a in args)
+        weight = np.asarray(weight) if weight is not None else None
+        seed = np.asarray(seed) if seed is not None else None
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = (self.numsamples,) + np.shape(args[0])
         if seed is not None:
-            generators = np.array(
+            generators = np.asarray(
                 [np.random.Generator(np.random.PCG64(s)) for s in seed]
             )
         args = tuple(np.broadcast_to(values, shape).T.flat for values in args)
@@ -167,15 +170,15 @@ class BootstrapHistogram:
         if seed is None:
             w = self._random.poisson(1.0, size=shape)
         else:
-            w = np.array(
+            w = np.asarray(
                 [r.poisson(1.0, size=(self.numsamples,)) for r in generators],
                 dtype=np.float,
-            )
+            ).T
         w = w.T
         if weight is not None:
-            weight = np.broadcast_to(weight, shape).T
-            w = w * weight
-        # print(f"debug shape={shape} {[a.shape for a in args]} {w.shape} {index.shape}")
+            shapedweight = np.broadcast_to(weight, shape).T
+            assert w.shape == shapedweight.shape
+            w = w * shapedweight
         hist.fill(*args, index, weight=w.flat, **kwargs)
         return self
 
@@ -186,11 +189,14 @@ class BootstrapHistogram:
         seed: Optional[ArrayLike] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
+        args = tuple(np.asarray(a) for a in args)
+        weight = np.asarray(weight) if weight is not None else None
+        seed = np.asarray(seed) if seed is not None else None
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = np.shape(args[0])
         if seed is not None:
-            generators = np.array(
+            generators = np.asarray(
                 [np.random.Generator(np.random.PCG64(s)) for s in seed]
             )
         for index in range(self.numsamples):

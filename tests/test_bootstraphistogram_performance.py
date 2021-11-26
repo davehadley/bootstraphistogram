@@ -23,7 +23,7 @@ def test_boostraphistogram_fast_and_slow_filling_give_identical_results(
     )
     data = np.random.uniform(size=size)
     weight = np.random.uniform(size=size) if withweight else None
-    seed = None  # TODO this fails tests? # np.arange(size) if withseed else None
+    seed = np.arange(size) if withseed else None
     hist_slow._fill_slow(data, weight=weight, seed=seed)
     hist_fast._fill_fast(data, weight=weight, seed=seed)
     assert hist_slow == hist_fast
@@ -35,7 +35,7 @@ def test_boostraphistogram_fast_and_slow_filling_give_identical_results(
 @pytest.mark.parametrize("withseed", [True, False], ids=["withseed", "withoutseed"])
 def test_boostraphistogram_fast_is_faster_than_slow(withweight, withseed):
     numsamples = 10000
-    arraysize = 1000
+    arraysize = 100
     hist_slow = BootstrapHistogram(
         bh.axis.Regular(100, 0.0, 1.0), numsamples=numsamples, rng=1234
     )
@@ -46,9 +46,9 @@ def test_boostraphistogram_fast_is_faster_than_slow(withweight, withseed):
     weight = np.random.uniform(size=arraysize) if withweight else None
     seed = np.arange(arraysize) if withseed else None
     slowtime = timeit(
-        lambda: hist_slow._fill_fast(data, weight=weight, seed=seed), number=5
+        lambda: hist_slow._fill_slow(data, weight=weight, seed=seed), number=5
     )
     fasttime = timeit(
-        lambda: hist_fast._fill_slow(data, weight=weight, seed=seed), number=5
+        lambda: hist_fast._fill_fast(data, weight=weight, seed=seed), number=5
     )
     assert slowtime > fasttime
