@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Any, NamedTuple, Optional, Union
 
 import boost_histogram as bh
@@ -21,12 +22,16 @@ class BootstrapMoment:
         self, numsamples: int = 1000, rng: Union[int, np.random.Generator, None] = None
     ):
         ax = bh.axis.Regular(1, -1.0, 1.0)
-        # TODO: these must be correlated!
-        self._sum_w = BootstrapHistogram(ax, numsamples=numsamples, rng=rng)
-        self._sum_w2 = BootstrapHistogram(ax, numsamples=numsamples, rng=rng)
-        self._sum_wt = BootstrapHistogram(ax, numsamples=numsamples, rng=rng)
-        self._sum_wt2 = BootstrapHistogram(ax, numsamples=numsamples, rng=rng)
-        # self._sum_wt3 = BootstrapHistogram(ax, numsamples=numsamples, rng=rng)
+        # provide identical generator to each histogram to ensure that sample weights
+        # are indentical
+        if rng is None:
+            rng = int(np.random.default_rng(rng).integers(np.iinfo(int).max))
+        # we must deepcopy the rng in case it is a Generator with some internal state
+        self._sum_w = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
+        self._sum_w2 = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
+        self._sum_wt = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
+        self._sum_wt2 = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
+        # self._sum_wt3 = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
 
     def fill(
         self,
