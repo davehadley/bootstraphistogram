@@ -15,6 +15,14 @@ def array_almost_equal(
     return np.all(np.abs(actual - expected) < delta)
 
 
+def test_bootstrapmoment_numsamples():
+    numsamples = 1000
+    moment = BootstrapMoment(numsamples=numsamples, rng=1234)
+    values = np.arange(100, dtype=float)
+    moment.fill(values)
+    assert len(moment.mean().samples) == moment.numsamples == numsamples
+
+
 def test_bootstrapmoment_mean():
     moment = BootstrapMoment(numsamples=1000, rng=1234)
     values = np.arange(100, dtype=float)
@@ -47,8 +55,9 @@ def test_bootstrapmoment_skewness():
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
 
 
-def test_bootstrapmoment_correlations():
-    moment = BootstrapMoment(numsamples=10000, rng=1234)
+@pytest.mark.parametrize("rng", [None, 1234])
+def test_bootstrapmoment_correlations(rng):
+    moment = BootstrapMoment(numsamples=10000, rng=rng)
     values = [1]
     moment.fill(values)
     w = moment._sum_w.samples.view().flatten()
