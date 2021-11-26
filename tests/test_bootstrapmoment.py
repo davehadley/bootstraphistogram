@@ -1,3 +1,5 @@
+import itertools
+
 import numpy as np
 
 from bootstraphistogram import BootstrapMoment
@@ -43,21 +45,27 @@ def test_bootstrapmoment_skewness():
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
 
 
-def test_bootstap_correlations():
+def test_bootstrap_correlations():
+    moment = BootstrapMoment(numsamples=10000, rng=1234)
+    values = [1]
+    moment.fill(values)
+    w = moment._sum_w.samples.view().flatten()
+    t1 = moment._sum_wt.samples.view().flatten()
+    t2 = moment._sum_wt2.samples.view().flatten()
+    t3 = moment._sum_wt3.samples.view().flatten()
+    cor = np.corrcoef([w, t1, t2, t3])
+    for row, column in itertools.combinations(range(4), 2):
+        assert abs(cor[row, column] - 1.0) < 1e-6
+
+
+def test_bootstrap_correlations_many_samples():
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
-    mu, sigma, skew = (
-        moment.mean().samples,
-        moment.std().samples,
-        moment.skewness().samples,
-    )
-    # import matplotlib.pyplot as plt
-    # plt.scatter(mu, sigma)
-    # plt.savefig("correlation.png")
-    assert (
-        np.corrcoef(mu, sigma)[0, 1]
-        == np.corrcoef(mu, skew)[0, 1]
-        == np.corrcoef(sigma, skew)[0, 1]
-        == 1.0
-    )
+    w = moment._sum_w.samples.view().flatten()
+    t1 = moment._sum_wt.samples.view().flatten()
+    t2 = moment._sum_wt2.samples.view().flatten()
+    t3 = moment._sum_wt3.samples.view().flatten()
+    cor = np.corrcoef([w, t1, t2, t3])
+    for row, column in itertools.combinations(range(4), 2):
+        assert cor[row, column] > 0.5
