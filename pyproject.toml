@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bootstraphistogram"
-version = "0.7.0"
+version = "0.8.0"
 description = "Poisson bootstrap histogram."
 license = "MIT"
 authors = ["David Hadley <davehadley@users.noreply.github.com>"]
@@ -11,15 +11,17 @@ homepage = "https://github.com/davehadley/bootstraphistogram"
 repository = "https://pypi.org/project/bootstraphistogram/"
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.6.2"
 numpy = "^1.19.0"
 boost-histogram = ">=1.0.0"
 matplotlib = "^3.1"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^6.0"
 pre-commit = "^2.15.0"
 tox = "^3.24.4"
+memory-profiler = "^0.58.0"
+pylint = "^2.12.1"
 
 [tool.black]
 target_version = ['py36', 'py37', 'py38']
@@ -28,3 +30,8 @@ target_version = ['py36', 'py37', 'py38']
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = " --doctest-modules "
+doctest_optionflags = " NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER ELLIPSIS"
+testpaths = ["tests", "src", "docs"]

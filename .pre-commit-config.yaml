@@ -38,3 +38,24 @@ repos:
     - id: check-toml
     - id: mixed-line-ending
       stages: [commit]
+
+- repo: local
+  hooks:
+    - id: pylint
+      name: pylint
+      entry: pylint
+      language: system
+      types: [python]
+      args:
+        [
+          "-rn", # Only display messages
+          "-sn", # Don't display the score
+          "-dno-else-return", # Disable no-else-return
+          "-dinvalid-name", # Too many warnings, too difficult to fix
+        ]
+      exclude: |
+        (?x)^(
+          tests/.*.py|
+          docs/.*.py|
+          scripts/.*.py|
+        )$

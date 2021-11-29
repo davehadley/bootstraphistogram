@@ -1,20 +1,25 @@
 """bootstraphistogram
 
-A multi-dimensional histogram. The distribution of the histograms bin values is computed with the Possion bootstrap
-re-sampling method. The main class is implemented in :py:class:`bootstraphistogram.BootstrapHistogram`.
-Some basic plotting functions are provided in :py:mod:`bootstraphistogram.plot`
+A multi-dimensional histogram. The distribution of the histograms bin values is
+computed with the Possion bootstrap re-sampling method.
+
+* :py:class:`bootstraphistogram.BootstrapHistogram` is the main histogram class.
+* Some basic plotting functions are provided in :py:mod:`bootstraphistogram.plot`.
+* :py:class:`bootstraphistogram.BootstrapMoment` calculates the first three moments of
+  a dataset.
 
 """
 
-import boost_histogram.axis as axis
+from boost_histogram import axis
 
-import bootstraphistogram.plot as plot
-from bootstraphistogram import _version
+from bootstraphistogram import plot
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
+from bootstraphistogram.bootstrapmoment import BootstrapMoment
+from bootstraphistogram.valuewithsamples import ValueWithSamples
 
-__version__ = _version.version(__name__)
+__version__ = "0.8.0"
 __license__ = "MIT"
 __author__ = "David Hadley"
-url = "https://github.com/davehadley/bootstraphistogram"
+__url__ = "https://github.com/davehadley/bootstraphistogram"
 
-__all__ = ["BootstrapHistogram", "axis", "plot"]
+__all__ = ["BootstrapHistogram", "BootstrapMoment", "ValueWithSamples", "axis", "plot"]
