@@ -3,6 +3,7 @@
   - Implement binary operations (`+`, `-`, `*`, `/`).
   - Fix issue [#5](https://github.com/davehadley/bootstraphistogram/issues/5).
   - Improve tests.
+  - Add `BootstrapMoment`, a class that calculates the first three moments of the filled data.
 
 # 0.7.0 (2021-11-10)
 

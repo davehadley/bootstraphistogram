@@ -137,7 +137,7 @@ class BootstrapHistogram:
             Per-element seed. Overrides the Generator given in the constructor and
             uses a pseudo-random number generator seeded by the given value.
             This may be useful when filling multiple histograms with data that is not statistically independent
-            (where if may be desirable to seed the generator with a record ID).
+            (where it may be desirable to seed the generator with a record ID).
         **kwargs : Any
             Passed on to :py:class:`boost_histogram.Histogram.fill`.
 
@@ -146,11 +146,78 @@ class BootstrapHistogram:
         self : BootstrapHistogram
             Reference to this object. This is done to maintain consistency with `boost_histogram.Histogram`.
         """
+        args = tuple(np.asarray(a) for a in args)
+        weight = np.asarray(weight) if weight is not None else None
+        seed = np.asarray(seed) if seed is not None else None
+        self._validate_fill_inputs(args, weight, seed)
+        if self.numsamples * args[0].size < 1000000:
+            return self._fill_fast(*args, weight=weight, seed=seed, **kwargs)
+        else:
+            return self._fill_slow(*args, weight=weight, seed=seed, **kwargs)
+
+    def _validate_fill_inputs(
+        self,
+        args: ArrayLike,
+        weight: Optional[ArrayLike] = None,
+        seed: Optional[ArrayLike] = None,
+    ) -> None:
+        if len(args) <= 0:
+            raise ValueError("fill must be provided at least 1 array as input.")
+        sizes = [a.size for a in args]
+        if not all(s == sizes[0] for s in sizes):
+            raise ValueError("all arrays must have the same length.")
+        if weight is not None and weight.size != sizes[0]:
+            raise ValueError(
+                "weight array size does not match the other input array sizes."
+            )
+        if seed is not None and seed.size != sizes[0]:
+            raise ValueError(
+                "seed array size does not match the other input array sizes."
+            )
+
+    def _fill_fast(
+        self,
+        *args: ArrayLike,
+        weight: Optional[ArrayLike] = None,
+        seed: Optional[ArrayLike] = None,
+        **kwargs: Any,
+    ) -> "BootstrapHistogram":
+        self._nominal.fill(*args, weight=weight, **kwargs)
+        hist = self._hist
+        shape = (self.numsamples,) + np.shape(args[0])
+        if seed is not None:
+            generators = np.asarray(
+                [np.random.Generator(np.random.PCG64(s)) for s in seed]
+            )
+        args = tuple(np.broadcast_to(values, shape).T.flat for values in args)
+        index = np.broadcast_to(np.arange(self.numsamples), reversed(shape)).flat
+        if seed is None:
+            w = self._random.poisson(1.0, size=shape)
+        else:
+            w = np.asarray(
+                [r.poisson(1.0, size=(self.numsamples,)) for r in generators],
+                dtype=np.float,
+            ).T
+        w = w.T
+        if weight is not None:
+            shapedweight = np.broadcast_to(weight, shape).T
+            assert w.shape == shapedweight.shape
+            w = w * shapedweight
+        hist.fill(*args, index, weight=w.flat, **kwargs)
+        return self
+
+    def _fill_slow(
+        self,
+        *args: ArrayLike,
+        weight: Optional[ArrayLike] = None,
+        seed: Optional[ArrayLike] = None,
+        **kwargs: Any,
+    ) -> "BootstrapHistogram":
         self._nominal.fill(*args, weight=weight, **kwargs)
         hist = self._hist
         shape = np.shape(args[0])
         if seed is not None:
-            generators = np.array(
+            generators = np.asarray(
                 [np.random.Generator(np.random.PCG64(s)) for s in seed]
             )
         for index in range(self.numsamples):

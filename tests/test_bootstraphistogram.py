@@ -1,7 +1,9 @@
+import itertools
 import pickle
 
 import boost_histogram as bh
 import numpy as np
+import pytest
 
 from bootstraphistogram import BootstrapHistogram
 
@@ -143,8 +145,10 @@ def test_multiply_by_scalar_nominal():
     hist = BootstrapHistogram(bh.axis.Regular(1, -1.0, 1.0), numsamples=10, rng=1234)
     hist.fill(0.0)
     scaled = hist * 2.0
+    scaled2 = 2.0 * hist  # test rmul
     assert np.array_equal(list(hist.nominal.view()), [1.0])
     assert np.array_equal(list(scaled.nominal.view()), [2.0])
+    assert scaled2 == scaled
 
 
 def test_divide_by_scalar_nominal():
@@ -180,8 +184,10 @@ def test_add_scalar():
     hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist1.fill([0.0, 0.0, 1.0])
     hist3 = hist1 + 2
+    hist4 = 2 + hist1  # test radd method
     assert np.array_equal(hist3.nominal.view(), [4.0, 3.0])
     assert np.array_equal(hist3.samples, hist1.samples + 2)
+    assert hist3 == hist4
 
 
 def test_sub_by_histogram():
@@ -200,6 +206,16 @@ def test_sub_scalar():
     hist3 = hist1 - 2
     assert np.array_equal(hist3.nominal.view(), [0.0, -1.0])
     assert np.array_equal(hist3.samples, hist1.samples - 2)
+
+
+def test_divide_by_histogram():
+    hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
+    hist1.fill([0.0, 1.0] * 400)
+    hist2.fill([0.0, 1.0] * 200)
+    hist3 = hist1 / hist2
+    assert np.array_equal(hist3.nominal.view(), [2.0, 2.0])
+    assert np.array_equal(hist3.samples, (hist1.samples / hist2.samples))
 
 
 def test_pickle():
@@ -259,3 +275,30 @@ def test_fill_with_integer_weights():
     weights = [0, 1, 2, 3, 4, -1]
     hist.fill(values, weight=weights)
     assert np.array_equal(hist.nominal.view(), [0.0, 1.0, 2.0, 7.0, -1.0])
+
+
+@pytest.mark.parametrize(
+    "numsamples,numarray", list(itertools.product([1, 2, 3], repeat=2))
+)
+@pytest.mark.parametrize(
+    "withweight", [True, False], ids=["withweight", "withoutweight"]
+)
+@pytest.mark.parametrize("withseed", [True, False], ids=["withseed", "withoutseed"])
+def test_fill_with_various_length_arrays(numsamples, numarray, withseed, withweight):
+    hist = BootstrapHistogram(
+        bh.axis.Regular(5, 0.0, 1.0), numsamples=numsamples, rng=1234
+    )
+    values = np.random.uniform(size=numarray)
+    weight = np.random.uniform(size=numarray) if withweight else None
+    seed = np.arange(numarray) if withseed else None
+    hist.fill(values, weight=weight, seed=seed)
+
+
+def test_fill_with_record_id_seed():
+    hist1 = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=1234)
+    hist2 = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=5678)
+    data = np.random.uniform(size=10000)
+    seed = np.arange(len(data))
+    hist1.fill(data, seed=seed)
+    hist2.fill(data, seed=seed)
+    assert hist1 == hist2

@@ -34,11 +34,16 @@ poetry install
 
 To run the unit tests run:
 ```bash
-poetry run pytest tests
+poetry run pytest
 ```
 
 To build documentation run:
 ```bash
 poetry pip install sphinx && \
 poetry run sphinx-build -W docs docs-build
+```
+
+To generate a test coverage report run:
+```bash
+poetry run coverage run -m pytest tests && poetry run coverage report -m
 ```
