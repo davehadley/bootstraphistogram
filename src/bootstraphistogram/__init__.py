@@ -1,9 +1,12 @@
 """bootstraphistogram
 
 A multi-dimensional histogram. The distribution of the histograms bin values is
-computed with the Possion bootstrap re-sampling method. The main class is implemented
-in :py:class:`bootstraphistogram.BootstrapHistogram`. Some basic plotting functions are
-provided in :py:mod:`bootstraphistogram.plot`
+computed with the Possion bootstrap re-sampling method.
+
+* :py:class:`bootstraphistogram.BootstrapHistogram` is the main histogram class.
+* Some basic plotting functions are provided in :py:mod:`bootstraphistogram.plot`.
+* :py:class:`bootstraphistogram.BootstrapMoment` calculates the first three moments of
+  a dataset.
 
 """
 

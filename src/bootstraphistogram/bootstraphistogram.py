@@ -51,17 +51,21 @@ class BootstrapHistogram:
         axeslist.append(bh.axis.Integer(0, numsamples))
         self._random = np.random.default_rng(rng)
         self._hist = bh.Histogram(*axeslist, **kwargs)
+        # when filling with very large arrays, the fast filling method may use too
+        # much memory, fall back to the slower method when the array size gets above
+        # this threshold
+        self._threshold_for_fast_method = 1000000
 
     @property
     def nominal(self) -> bh.Histogram:
-        """boost_histogram.Histogram: A histogram of the filled values, with no
+        """A histogram of the filled values, with no
         bootstrap samples.
         """
         return self._nominal
 
     @property
     def samples(self) -> bh.Histogram:
-        """boost_histogram.Histogram: A histogram of the bootstrap samples. The last
+        """A histogram of the bootstrap samples. The last
         dimension corresponds to the bootstrap sample index and is of size
         :py:attr:`BootstrapHistogram.numsamples`.
         """
@@ -116,12 +120,12 @@ class BootstrapHistogram:
 
     @property
     def numsamples(self) -> int:
-        """int: Number of bootstrap re-samplings."""
+        """Number of bootstrap re-samplings."""
         return len(self.axes[-1])
 
     @property
     def axes(self) -> Tuple[bh.axis.Axis, ...]:
-        """Tuple[bh.axis.Axis, ...]: :py:class:`boost_histogram.axis.Axis` representing
+        """:py:class:`boost_histogram.axis.Axis` representing
         the histogram binning. The last dimension corresponds to the bootstrap sample
         index."""
         return self._hist.axes
@@ -162,7 +166,7 @@ class BootstrapHistogram:
         weight = np.asarray(weight) if weight is not None else None
         seed = np.asarray(seed) if seed is not None else None
         self._validate_fill_inputs(args, weight, seed)
-        if self.numsamples * args[0].size < 1000000:
+        if (self.numsamples * args[0].size) < self._threshold_for_fast_method:
             return self._fill_fast(*args, weight=weight, seed=seed, **kwargs)
         else:
             return self._fill_slow(*args, weight=weight, seed=seed, **kwargs)

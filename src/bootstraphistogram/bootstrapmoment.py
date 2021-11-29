@@ -28,10 +28,46 @@ class BootstrapMoment:
     rng : Union[int, np.random.Generator, None]
         A numpy generator. If not provided, the numpy default from
         :py:func:`numpy.random.default_rng` will be used.
+    **kwargs: Any
+        Passed on to the underlying :py:class:`bootstraphistogram.BootstrapHistogram`.
+
+    Examples
+    --------
+
+    To create and fill an instance:
+
+    >>> from bootstraphistogram import BootstrapMoment
+    >>> import numpy as np
+    >>> moments = BootstrapMoment(3, rng=1234)
+    >>> moments.fill(np.arange(101))
+
+    Compute the mean:
+
+    >>> moments.mean().nominal
+    50.0
+    >>> moments.mean().samples
+    array([51.4, 50.3, 46.1 ])
+
+    Compute the standard deviation:
+
+    >>> moments.std().nominal
+    29.15
+    >>> moments.std().samples
+    array([29.5, 29.5, 28.6])
+
+    Compute the skewness:
+
+    >>> moments.skewness().nominal
+    0.0
+    >>> moments.skewness().samples
+    array([-0.00,  0.10,  0.06])
     """
 
     def __init__(
-        self, numsamples: int = 1000, rng: Union[int, np.random.Generator, None] = None
+        self,
+        numsamples: int = 1000,
+        rng: Union[int, np.random.Generator, None] = None,
+        **kwargs: Any,
     ):
         ax = bh.axis.Regular(1, -1.0, 1.0)
         # provide identical generator to each histogram to ensure that sample weights
@@ -39,10 +75,18 @@ class BootstrapMoment:
         if rng is None:
             rng = int(np.random.default_rng(rng).integers(np.iinfo(int).max))
         # we must deepcopy the rng in case it is a Generator with some internal state
-        self._sum_w = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
-        self._sum_wt = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
-        self._sum_wt2 = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
-        self._sum_wt3 = BootstrapHistogram(ax, numsamples=numsamples, rng=deepcopy(rng))
+        self._sum_w = BootstrapHistogram(
+            ax, numsamples=numsamples, rng=deepcopy(rng), **kwargs
+        )
+        self._sum_wt = BootstrapHistogram(
+            ax, numsamples=numsamples, rng=deepcopy(rng), **kwargs
+        )
+        self._sum_wt2 = BootstrapHistogram(
+            ax, numsamples=numsamples, rng=deepcopy(rng), **kwargs
+        )
+        self._sum_wt3 = BootstrapHistogram(
+            ax, numsamples=numsamples, rng=deepcopy(rng), **kwargs
+        )
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -168,22 +212,22 @@ class BootstrapMoment:
             sumwt2=self._sum_wt2.samples.view(),
             sumwt3=self._sum_wt3.samples.view(),
         )
-        return ValueWithSamples(nominal, samples)
+        return ValueWithSamples(nominal, samples.flatten())
 
     @property
     def numsamples(self) -> int:
-        """int: Number of bootstrap re-samplings."""
+        """Number of bootstrap re-samplings."""
         return self._sum_w.numsamples
 
 
 def _mean(sumw: ArrayLike, sumwt: ArrayLike) -> ArrayLike:
-    return sumwt / sumw
+    return np.divide(sumwt, sumw)
 
 
 def _variance(sumw: ArrayLike, sumwt: ArrayLike, sumwt2: ArrayLike) -> ArrayLike:
     mu = _mean(sumwt=sumwt, sumw=sumw)
-    mu2 = mu * mu
-    return mu2 + ((sumwt2 - 2.0 * sumwt * mu) / sumw)
+    mu2 = np.multiply(mu, mu)
+    return mu2 + np.divide((sumwt2 - 2.0 * np.multiply(sumwt, mu)), sumw)
 
 
 def _skewness(
@@ -191,5 +235,8 @@ def _skewness(
 ) -> ArrayLike:
     mu = _mean(sumwt=sumwt, sumw=sumw)
     sigma = np.sqrt(_variance(sumw=sumw, sumwt=sumwt, sumwt2=sumwt2))
-    mut3 = sumwt3 / sumw
-    return (mut3 - 3 * mu * np.power(sigma, 2) - np.power(mu, 3)) / np.power(sigma, 3)
+    mut3 = np.divide(sumwt3, sumw)
+    return np.divide(
+        (mut3 - 3 * np.multiply(mu, np.power(sigma, 2)) - np.power(mu, 3)),
+        np.power(sigma, 3),
+    )

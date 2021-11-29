@@ -23,12 +23,12 @@ class ValueWithSamples(Generic[T]):
 
     @property
     def nominal(self) -> T:
-        """T: the value without any resampling."""
+        """the value without any resampling."""
         return self._nominal
 
     @property
     def samples(self) -> np.ndarray:
-        """np.ndarray: the value with Poisson bootstrap resampling applied."""
+        """the value with Poisson bootstrap resampling applied."""
         return self._samples
 
     def __eq__(self, other: object) -> bool:

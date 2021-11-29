@@ -48,6 +48,19 @@ def test_bootstrapmoment_skewness():
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
 
 
+def test_bootstrapmoment_array_shapes():
+    moment = BootstrapMoment(numsamples=3, rng=1234)
+    values = np.arange(100, dtype=float)
+    moment.fill(values)
+    assert (
+        moment.mean().samples.shape
+        == moment.std().samples.shape
+        == moment.variance().samples.shape
+        == moment.skewness().samples.shape
+        == (3,)
+    )
+
+
 @pytest.mark.parametrize("rng", [None, 1234])
 def test_bootstrapmoment_correlations(rng):
     moment = BootstrapMoment(numsamples=10000, rng=rng)
