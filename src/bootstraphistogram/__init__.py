@@ -12,10 +12,11 @@ from boost_histogram import axis
 from bootstraphistogram import plot
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from bootstraphistogram.bootstrapmoment import BootstrapMoment
+from bootstraphistogram.valuewithsamples import ValueWithSamples
 
 __version__ = "0.8.0"
 __license__ = "MIT"
 __author__ = "David Hadley"
 __url__ = "https://github.com/davehadley/bootstraphistogram"
 
-__all__ = ["BootstrapHistogram", "BootstrapMoment", "axis", "plot"]
+__all__ = ["BootstrapHistogram", "BootstrapMoment", "ValueWithSamples", "axis", "plot"]
