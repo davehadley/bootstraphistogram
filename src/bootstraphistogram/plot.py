@@ -1,3 +1,4 @@
+"""Functions to plot `BootstrapHistogram` objects with `matplotlib`."""
 from typing import Any, Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -14,13 +15,14 @@ _PERCENTILES_MEDIAN_AND_2SIGMA = (_PERCENTILES_2SIGMA[0], 50.0, _PERCENTILES_2SI
 
 
 class HistogramRankError(ValueError):
-    pass
+    """Error raised when trying to plot a histogram with the wrong number of dimensions."""
 
 
 def _enforce1d(hist: BootstrapHistogram) -> None:
     if len(hist.nominal.shape) != 1:
         raise HistogramRankError(
-            "this function only supports plotting 1D histograms. Try BoostrapHistogram.project to reduce inputs to 1D."
+            "this function only supports plotting 1D histograms. Try "
+            "BoostrapHistogram.project to reduce inputs to 1D."
         )
 
 
@@ -74,7 +76,8 @@ def step(
     hist: bootstraphistogram.BootstrapHistogram
         the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
     percentile: Optional[float]
-        the sample percentile to plot. A number between 0 and 100. 50 corresponds to the median. If ``None``, the mean is plotted.
+        the sample percentile to plot. A number between 0 and 100. 50 corresponds to
+        the median. If ``None``, the mean is plotted.
     ax: Optional[matplotlib.axes.Axes]
         :py:class:`matplotlib.axes.Axes` to plot on.
     **kwargs : Any
@@ -109,7 +112,8 @@ def fill_between(
     hist: bootstraphistogram.BootstrapHistogram
         the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
     percentiles: Tuple[float, float]
-        upper and lower percentile bounds to fill. A pair of numbers between 0 and 100. Defaults to fill an equal-tailed 68.27% interval.
+        upper and lower percentile bounds to fill. A pair of numbers between 0 and 100.
+        Defaults to fill an equal-tailed 68.27% interval.
     ax: Optional[matplotlib.axes.Axes]
         :py:class:`matplotlib.axes.Axes` to plot on.
     **kwargs : Any
