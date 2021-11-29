@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.6'
       - name: Run pre-commit checks
-        run: pip install pre-commit && pre-commit install && pre-commit run --all
+        run: pip install pre-commit pylint && pre-commit install && pre-commit run --all
       - name: Build docs
         run: pip install . && pip install -r docs/requirements.txt && sphinx-build -W docs docs-build
   build-linux:
