@@ -302,3 +302,30 @@ def test_fill_with_record_id_seed():
     hist1.fill(data, seed=seed)
     hist2.fill(data, seed=seed)
     assert hist1 == hist2
+
+
+def test_fill_with_invalid_data():
+    hist1d = BootstrapHistogram(
+        bh.axis.Regular(100, -5.0, 5.0), numsamples=10, rng=1234
+    )
+    hist2d = BootstrapHistogram(
+        bh.axis.Regular(100, -5.0, 5.0),
+        bh.axis.Regular(100, -5.0, 5.0),
+        numsamples=10,
+        rng=1234,
+    )
+    with pytest.raises(ValueError):
+        hist1d.fill()
+    with pytest.raises(ValueError):
+        hist2d.fill([1, 2], [1])
+    with pytest.raises(ValueError):
+        hist2d.fill([1], [1, 2])
+    with pytest.raises(ValueError):
+        hist1d.fill([1, 2], weight=[1])
+    with pytest.raises(ValueError):
+        hist1d.fill([1], weight=[1, 2])
+    with pytest.raises(ValueError):
+        hist1d.fill([1], seed=[1, 2])
+    with pytest.raises(ValueError):
+        hist1d.fill([1, 2], seed=[1])
+    return

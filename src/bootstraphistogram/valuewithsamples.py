@@ -55,9 +55,6 @@ class ValueWithSamples(Generic[T]):
             self.nominal + other.nominal, self.samples + other.samples
         )
 
-    def __radd__(self, other: "ValueWithSamples") -> "ValueWithSamples":
-        return self + other
-
     def __sub__(self, other: "ValueWithSamples") -> "ValueWithSamples":
         return ValueWithSamples(
             self.nominal - other.nominal, self.samples - other.samples
@@ -67,9 +64,6 @@ class ValueWithSamples(Generic[T]):
         return ValueWithSamples(
             self.nominal * other.nominal, np.multiply(self.samples, other.samples)
         )
-
-    def __rmul__(self, other: "ValueWithSamples") -> "ValueWithSamples":
-        return self * other
 
     def __truediv__(self, other: "ValueWithSamples") -> "ValueWithSamples":
         return ValueWithSamples(

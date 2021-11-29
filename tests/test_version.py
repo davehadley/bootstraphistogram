@@ -10,8 +10,6 @@ def _package_meta_data_version(packagename: str) -> str:
         import pkg_resources
 
         return pkg_resources.get_distribution(packagename).version
-    except Exception:
-        return "unknown"
 
 
 def testversion():
