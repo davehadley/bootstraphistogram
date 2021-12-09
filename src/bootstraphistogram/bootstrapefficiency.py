@@ -87,6 +87,30 @@ class BootstrapEfficiency:
         return BootstrapEfficiency.Histogram(numerator, denominator, ratio)
 
     @property
+    def efficiency(self) -> BootstrapHistogram:
+        """The efficiency as a `BootstrapHistogram`."""
+        #  pylint: disable=protected-access
+        return BootstrapHistogram._from_bh_histogram(
+            self.nominal.efficiency, self.samples.efficiency, self._hist._random
+        )
+
+    @property
+    def numerator(self) -> BootstrapHistogram:
+        """The numerator as a `BootstrapHistogram`."""
+        #  pylint: disable=protected-access
+        return BootstrapHistogram._from_bh_histogram(
+            self.nominal.numerator, self.samples.numerator, self._hist._random
+        )
+
+    @property
+    def denominator(self) -> BootstrapHistogram:
+        """The denominator as a `BootstrapHistogram`."""
+        #  pylint: disable=protected-access
+        return BootstrapHistogram._from_bh_histogram(
+            self.nominal.denominator, self.samples.denominator, self._hist._random
+        )
+
+    @property
     def nominal(self) -> "BootstrapEfficiency.Histogram":
         """A histogram of the filled values, with no
         bootstrap re-sampling applied.

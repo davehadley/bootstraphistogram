@@ -148,3 +148,22 @@ def test_fill_with_mismatched_size_raises():
 def test_nanto():
     eff = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=9, nanto=0.0)
     assert np.all(eff.nominal.efficiency.view() == [0.0, 0.0, 0.0])
+
+
+def test_efficiency_property():
+    eff = BootstrapEfficiency(Regular(3, 0.0, 3.0), rng=1234)
+    eff.fill(
+        [1, 1, 0, 0, 0, 1] * 1000,
+        [0.0, 0.0, 1.0, 1.0, 2.0, 2.0] * 1000,
+    )
+    efficiency = eff.efficiency
+    numerator = eff.numerator
+    denominator = eff.denominator
+    assert np.all(numerator.nominal.view() == np.array([2000.0, 0.0, 1000.0]))
+    assert np.all(denominator.nominal.view() == np.array([2000.0, 2000.0, 2000.0]))
+    assert np.all(efficiency.nominal.view() == np.array([1.0, 0.0, 0.5]))
+    assert numerator.mean() == pytest.approx(np.array([2000.0, 0.0, 1000.0]), rel=0.05)
+    assert denominator.mean() == pytest.approx(
+        np.array([2000.0, 2000.0, 2000.0]), rel=0.05
+    )
+    assert efficiency.mean() == pytest.approx(np.array([1.0, 0.0, 0.5]), rel=0.05)
