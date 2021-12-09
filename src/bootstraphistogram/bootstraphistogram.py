@@ -48,7 +48,7 @@ class BootstrapHistogram:
     ):
         axeslist = list(axes)
         self._nominal = bh.Histogram(*axeslist, **kwargs)
-        axeslist.append(bh.axis.Integer(0, numsamples))
+        axeslist.append(bh.axis.Integer(0, numsamples, underflow=False, overflow=False))
         self._random = np.random.default_rng(rng)
         self._hist = bh.Histogram(*axeslist, **kwargs)
         # when filling with very large arrays, the fast filling method may use too
@@ -353,8 +353,10 @@ class BootstrapHistogram:
         #  pylint: disable=protected-access
         result = copy(self)
         arglist = list(args)
-        result._nominal = self._nominal.project(*arglist)
         sampleaxis = len(self.axes) - 1
+        result._nominal = self._nominal.project(
+            *[arg for arg in arglist if arg != sampleaxis]
+        )
         if sampleaxis not in arglist:
             arglist.append(sampleaxis)
         result._hist = self._hist.project(*arglist)

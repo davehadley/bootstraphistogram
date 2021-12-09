@@ -52,6 +52,7 @@ repos:
           "-sn", # Don't display the score
           "-dno-else-return", # Disable no-else-return
           "-dinvalid-name", # Too many warnings, too difficult to fix
+          "-dduplicate-code", # Too many false positives
         ]
       exclude: |
         (?x)^(
