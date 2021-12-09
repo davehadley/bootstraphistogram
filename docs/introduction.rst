@@ -8,4 +8,6 @@ represented by the bin values.
 
 The main class is implemented in :py:class:`bootstraphistogram.BootstrapHistogram`.
 Some basic plotting functions are provided in :py:mod:`bootstraphistogram.plot`.
+:py:class:`bootstraphistogram.BootstrapEfficiency` handles the common case of 
+computing the fraction of data points passing some selection criteria.
 See :ref:`examples`.

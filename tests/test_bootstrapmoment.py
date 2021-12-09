@@ -48,6 +48,25 @@ def test_bootstrapmoment_skewness():
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
 
 
+def test_bootstrapmoment_add():
+    moment1 = BootstrapMoment(numsamples=1000, rng=1234)
+    moment2 = BootstrapMoment(numsamples=1000, rng=1234)
+    values1 = np.arange(50, dtype=float)
+    values2 = np.arange(50, 100, dtype=float)
+    moment1.fill(values1)
+    moment2.fill(values2)
+    moment = moment1 + moment2
+    values = np.concatenate([values1, values2])
+    assert abs(moment.mean().nominal - np.average(values)) < 0.001
+    assert abs(np.average(moment.mean().samples) - np.average(values)) < 1.0
+    assert abs(moment.variance().nominal - np.var(values)) < 0.01
+    assert abs(np.average(moment.variance().samples) - np.var(values)) < 10.0
+    assert abs(moment.std().nominal - np.std(values)) < 0.01
+    assert abs(np.average(moment.std().samples) - np.std(values)) < 1.0
+    assert abs(moment.skewness().nominal - _skewness(values)) < 0.01
+    assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
+
+
 def test_bootstrapmoment_array_shapes():
     moment = BootstrapMoment(numsamples=3, rng=1234)
     values = np.arange(100, dtype=float)

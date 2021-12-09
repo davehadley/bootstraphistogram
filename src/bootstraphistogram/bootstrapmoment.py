@@ -65,7 +65,7 @@ class BootstrapMoment:
 
     def __init__(
         self,
-        numsamples: int = 1000,
+        numsamples: int = 100,
         rng: Union[int, np.random.Generator, None] = None,
         **kwargs: Any,
     ):
@@ -218,6 +218,15 @@ class BootstrapMoment:
     def numsamples(self) -> int:
         """Number of bootstrap re-samplings."""
         return self._sum_w.numsamples
+
+    def __add__(self: "BootstrapMoment", rhs: "BootstrapMoment") -> "BootstrapMoment":
+        """Merge two BootstrapMoment objects together by summing their underlying histograms."""
+        result = deepcopy(self)
+        result._sum_w += rhs._sum_w
+        result._sum_wt += rhs._sum_wt
+        result._sum_wt2 += rhs._sum_wt2
+        result._sum_wt3 += rhs._sum_wt3
+        return result
 
 
 def _mean(sumw: ArrayLike, sumwt: ArrayLike) -> ArrayLike:

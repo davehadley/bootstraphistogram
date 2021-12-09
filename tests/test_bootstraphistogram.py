@@ -329,3 +329,26 @@ def test_fill_with_invalid_data():
     with pytest.raises(ValueError):
         hist1d.fill([1, 2], seed=[1])
     return
+
+
+def test_project():
+    xax = bh.axis.Regular(2, 0.0, 2.0)
+    yax = bh.axis.Regular(3, 0.0, 3.0)
+    hist = BootstrapHistogram(xax, yax, numsamples=9, rng=1234)
+    assert hist.view(flow=True).shape == (2 + 2, 3 + 2, 9)
+    assert hist.project(0).view(flow=True).shape == (2 + 2, 9)
+    assert hist.project(1).view(flow=True).shape == (3 + 2, 9)
+    assert hist.project(2).view(flow=True).shape == (9,)
+    assert hist.project(0, 1).view(flow=True).shape == (2 + 2, 3 + 2, 9)
+
+
+def test_fill_with_empty_array():
+    hist = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), numsamples=9, rng=1234)
+    hist.fill([])
+    assert np.all(hist.view(flow=True) == np.zeros((2 + 2, 9)))
+
+
+def test_fill_with_empty_weighted_array():
+    hist = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), numsamples=9, rng=1234)
+    hist.fill([], weight=[])
+    assert np.all(hist.view(flow=True) == np.zeros((2 + 2, 9)))

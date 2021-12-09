@@ -42,19 +42,45 @@ class BootstrapHistogram:
     def __init__(
         self,
         *axes: bh.axis.Axis,
-        numsamples: int = 1000,
+        numsamples: int = 100,
         rng: Union[int, np.random.Generator, None] = None,
         **kwargs: Any,
     ):
+        # we defer the initialization of these variables until _intialize.
+        self._nominal: bh.Histogram = None
+        self._hist: bh.Histogram = None
+        self._random: np.random.Generator = None
         axeslist = list(axes)
-        self._nominal = bh.Histogram(*axeslist, **kwargs)
-        axeslist.append(bh.axis.Integer(0, numsamples))
+        nominal = bh.Histogram(*axeslist, **kwargs)
+        axeslist.append(bh.axis.Integer(0, numsamples, underflow=False, overflow=False))
+        samples = bh.Histogram(*axeslist, **kwargs)
+        self._initialize(nominal, samples, rng)
+
+    def _initialize(
+        self,
+        nominal: bh.Histogram,
+        samples: bh.Histogram,
+        rng: Union[int, np.random.Generator, None] = None,
+    ):
+        self._nominal = nominal
+        self._hist = samples
         self._random = np.random.default_rng(rng)
-        self._hist = bh.Histogram(*axeslist, **kwargs)
         # when filling with very large arrays, the fast filling method may use too
         # much memory, fall back to the slower method when the array size gets above
         # this threshold
         self._threshold_for_fast_method = 1000000
+
+    @classmethod
+    def _from_bh_histogram(
+        cls,
+        nominal: bh.Histogram,
+        samples: bh.Histogram,
+        rng: Union[int, np.random.Generator, None],
+    ) -> "BootstrapHistogram":
+        result = cls.__new__(cls)
+        result._nominal = nominal
+        result._initialize(nominal, samples, rng)
+        return result
 
     @property
     def nominal(self) -> bh.Histogram:
@@ -353,8 +379,10 @@ class BootstrapHistogram:
         #  pylint: disable=protected-access
         result = copy(self)
         arglist = list(args)
-        result._nominal = self._nominal.project(*arglist)
         sampleaxis = len(self.axes) - 1
+        result._nominal = self._nominal.project(
+            *[arg for arg in arglist if arg != sampleaxis]
+        )
         if sampleaxis not in arglist:
             arglist.append(sampleaxis)
         result._hist = self._hist.project(*arglist)

@@ -15,6 +15,6 @@ def _package_meta_data_version(packagename: str) -> str:
 def testversion():
     assert (
         bootstraphistogram.__version__
-        == "0.8.0"
+        == "0.9.0"
         == _package_meta_data_version(bootstraphistogram.__name__)
     )

@@ -30,3 +30,10 @@ bootstraphistogram.ValueWithSamples
 .. autoclass:: bootstraphistogram.ValueWithSamples
    :members:
    :undoc-members:
+
+bootstraphistogram.BootstrapEfficiency
+--------------------------------------
+
+.. autoclass:: bootstraphistogram.BootstrapEfficiency
+   :members:
+   :undoc-members:

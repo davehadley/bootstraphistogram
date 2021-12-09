@@ -38,3 +38,9 @@ A More Complex Plot
 
 .. plot:: pyplots/complex_example.py
    :include-source:
+
+Efficiency plot
+---------------
+
+.. plot:: pyplots/efficiency_example.py
+   :include-source:

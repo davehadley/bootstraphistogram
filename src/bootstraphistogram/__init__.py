@@ -13,13 +13,21 @@ computed with the Possion bootstrap re-sampling method.
 from boost_histogram import axis
 
 from bootstraphistogram import plot
+from bootstraphistogram.bootstrapefficiency import BootstrapEfficiency
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from bootstraphistogram.bootstrapmoment import BootstrapMoment
 from bootstraphistogram.valuewithsamples import ValueWithSamples
 
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 __license__ = "MIT"
 __author__ = "David Hadley"
 __url__ = "https://github.com/davehadley/bootstraphistogram"
 
-__all__ = ["BootstrapHistogram", "BootstrapMoment", "ValueWithSamples", "axis", "plot"]
+__all__ = [
+    "BootstrapHistogram",
+    "BootstrapMoment",
+    "BootstrapEfficiency",
+    "ValueWithSamples",
+    "axis",
+    "plot",
+]

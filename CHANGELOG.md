@@ -1,3 +1,9 @@
+# 0.9.0 (2021-12-09)
+
+  - Implement BoostrapEfficiency for calculating binned efficiencies.
+  - Implement binary operation (`+`) on `BoostrapMoment`.
+  - Improve tests and new documentation.
+
 # 0.8.0 (2021-11-25)
 
   - Implement binary operations (`+`, `-`, `*`, `/`) on histograms.
