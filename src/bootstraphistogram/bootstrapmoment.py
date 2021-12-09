@@ -65,7 +65,7 @@ class BootstrapMoment:
 
     def __init__(
         self,
-        numsamples: int = 1000,
+        numsamples: int = 100,
         rng: Union[int, np.random.Generator, None] = None,
         **kwargs: Any,
     ):
