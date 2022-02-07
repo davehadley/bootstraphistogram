@@ -39,7 +39,7 @@ poetry run pytest
 
 To build documentation run:
 ```bash
-poetry run pip install sphinx && \
+poetry run pip install -r docs/requirements.txt && \
 poetry run sphinx-build -W docs docs-build
 ```
 
