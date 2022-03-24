@@ -134,7 +134,7 @@ class BootstrapMoment:
         self._sum_wt2.fill(zeros, weight=wt2, seed=seed, **kwargs)
         self._sum_wt3.fill(zeros, weight=wt3, seed=seed, **kwargs)
 
-    def mean(self) -> ValueWithSamples:
+    def mean(self) -> ValueWithSamples[float]:
         """
         Compute the mean.
 
@@ -151,7 +151,7 @@ class BootstrapMoment:
         )
         return ValueWithSamples(nominal, samples.flatten())
 
-    def variance(self) -> ValueWithSamples:
+    def variance(self) -> ValueWithSamples[float]:
         """
         Compute the variance.
 
@@ -175,7 +175,7 @@ class BootstrapMoment:
         )
         return ValueWithSamples(nominal, samples.flatten())
 
-    def std(self) -> ValueWithSamples:
+    def std(self) -> ValueWithSamples[float]:
         """
         Compute the standard deviation.
 
@@ -188,7 +188,7 @@ class BootstrapMoment:
         variance = self.variance()
         return ValueWithSamples(np.sqrt(variance.nominal), np.sqrt(variance.samples))
 
-    def skewness(self) -> ValueWithSamples:
+    def skewness(self) -> ValueWithSamples[float]:
         """
         Compute the skewness.
 

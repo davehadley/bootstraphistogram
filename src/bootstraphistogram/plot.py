@@ -26,7 +26,7 @@ def _enforce1d(hist: BootstrapHistogram) -> None:
         )
 
 
-def _getaxes(ax: Optional[MplAxes]):
+def _getaxes(ax: Optional[MplAxes]) -> MplAxes:
     if ax is None:
         ax = plt.gca()
     return ax

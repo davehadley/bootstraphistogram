@@ -125,14 +125,14 @@ class BootstrapEfficiency:
         """
         return self._hist_to_result(self._hist.samples, nanto=self._nanto)
 
-    def mean(self, flow=False) -> "BootstrapEfficiency.Array":
+    def mean(self, flow: bool = False) -> "BootstrapEfficiency.Array":
         """Binned mean of the bootstrap samples."""
         samples = self.samples
         return BootstrapEfficiency.Array(
             *[np.mean(hst.view(flow=flow), axis=-1) for hst in samples]
         )
 
-    def std(self, flow=False) -> np.ndarray:
+    def std(self, flow: bool = False) -> np.ndarray:
         """Binned standard deviation of the boostrap samples."""
         samples = self.samples
         return BootstrapEfficiency.Array(
@@ -140,7 +140,7 @@ class BootstrapEfficiency:
         )
 
     def percentile(
-        self, q: float, flow=False, interpolation: str = "linear"
+        self, q: float, flow: bool = False, interpolation: str = "linear"
     ) -> np.ndarray:
         """
         Binned q-th percentile of the bootstrap samples.
@@ -237,7 +237,7 @@ class BootstrapEfficiency:
                 "selected array size does not match the other input array sizes."
             )
 
-    def view(self, flow=False) -> Any:
+    def view(self, flow: bool = False) -> Any:
         """
         Return a view of the underlying histogram bootstrap sample values.
         """

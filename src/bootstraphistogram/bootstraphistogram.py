@@ -49,7 +49,7 @@ class BootstrapHistogram:
         # we defer the initialization of these variables until _intialize.
         self._nominal: bh.Histogram = None  # type: ignore
         self._hist: bh.Histogram = None  # type: ignore
-        self._random: np.random.Generator = None  # type: ignore
+        self._random: np.random.Generator = None
         axeslist = list(axes)
         nominal = bh.Histogram(*axeslist, **kwargs)
         axeslist.append(bh.axis.Integer(0, numsamples, underflow=False, overflow=False))
@@ -61,7 +61,7 @@ class BootstrapHistogram:
         nominal: bh.Histogram,
         samples: bh.Histogram,
         rng: Union[int, np.random.Generator, None] = None,
-    ):
+    ) -> None:
         self._nominal = nominal
         self._hist = samples
         self._random = np.random.default_rng(rng)
@@ -97,7 +97,7 @@ class BootstrapHistogram:
         """
         return self._hist
 
-    def mean(self, flow=False) -> np.ndarray:
+    def mean(self, flow: bool = False) -> np.ndarray:
         """
         Binned sample mean.
 
@@ -109,7 +109,7 @@ class BootstrapHistogram:
         """
         return np.mean(self.view(flow=flow), axis=-1)
 
-    def std(self, flow=False) -> np.ndarray:
+    def std(self, flow: bool = False) -> np.ndarray:
         """
         Binned sample standard deviation.
 
@@ -122,7 +122,7 @@ class BootstrapHistogram:
         return np.std(self.view(flow=flow), axis=-1)
 
     def percentile(
-        self, q: float, flow=False, interpolation: str = "linear"
+        self, q: float, flow: bool = False, interpolation: str = "linear"
     ) -> np.ndarray:
         """
         Binned q-th percentile.
@@ -276,7 +276,7 @@ class BootstrapHistogram:
             hist.fill(*args, index, weight=sampleweights, **kwargs)
         return self
 
-    def view(self, flow=False) -> Any:
+    def view(self, flow: bool = False) -> Any:
         """
         Return a view of the underlying histogram bootstrap sample values.
         """
@@ -335,7 +335,9 @@ class BootstrapHistogram:
             result._nominal -= other
         return result
 
-    def __mul__(self, other: Union["BootstrapHistogram", ArrayLike, float]):
+    def __mul__(
+        self, other: Union["BootstrapHistogram", ArrayLike, float]
+    ) -> "BootstrapHistogram":
         result = deepcopy(self)
         if isinstance(other, BootstrapHistogram):
             result._hist *= other._hist
@@ -350,7 +352,9 @@ class BootstrapHistogram:
     ) -> "BootstrapHistogram":
         return self * other
 
-    def __truediv__(self, other: Union["BootstrapHistogram", ArrayLike, float]):
+    def __truediv__(
+        self, other: Union["BootstrapHistogram", ArrayLike, float]
+    ) -> "BootstrapHistogram":
         result = deepcopy(self)
         if isinstance(other, BootstrapHistogram):
             result._hist /= other._hist

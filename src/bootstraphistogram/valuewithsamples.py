@@ -42,7 +42,7 @@ class ValueWithSamples(Generic[T]):
             and np.array_equal(self.samples, other.samples)
         )
 
-    def __add__(self, other: "ValueWithSamples") -> "ValueWithSamples":
+    def __add__(self, other: "ValueWithSamples[T]") -> "ValueWithSamples[T]":
         """
         Sum both values and their associated samples.
 
@@ -52,20 +52,23 @@ class ValueWithSamples(Generic[T]):
             A new instance of the summed values.
         """
         return ValueWithSamples(
-            self.nominal + other.nominal, self.samples + other.samples
+            self.nominal + other.nominal,  # type: ignore
+            self.samples + other.samples,
         )
 
-    def __sub__(self, other: "ValueWithSamples") -> "ValueWithSamples":
+    def __sub__(self, other: "ValueWithSamples[T]") -> "ValueWithSamples[T]":
         return ValueWithSamples(
-            self.nominal - other.nominal, self.samples - other.samples
+            self.nominal - other.nominal, self.samples - other.samples  # type: ignore
         )
 
-    def __mul__(self, other: "ValueWithSamples"):
+    def __mul__(self, other: "ValueWithSamples[T]") -> "ValueWithSamples[T]":
         return ValueWithSamples(
-            self.nominal * other.nominal, np.multiply(self.samples, other.samples)
+            self.nominal * other.nominal,  # type: ignore
+            np.multiply(self.samples, other.samples),
         )
 
-    def __truediv__(self, other: "ValueWithSamples") -> "ValueWithSamples":
+    def __truediv__(self, other: "ValueWithSamples[T]") -> "ValueWithSamples[T]":
         return ValueWithSamples(
-            self.nominal / other.nominal, np.divide(self.samples, other.samples)
+            self.nominal / other.nominal,  # type: ignore
+            np.divide(self.samples, other.samples),
         )
