@@ -1,15 +1,15 @@
 """Implements :py:class:`BoostrapEfficiency`, a tool for calculating binned efficiencies."""
 
 from copy import copy, deepcopy
-from typing import Any, NamedTuple, Optional, Tuple, Union
+from typing import Any, NamedTuple, Optional, Tuple, Union, cast
 
 import boost_histogram as bh
-import numpy as np
+import numpy as np  # type: ignore
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 
 try:
-    from numpy.typing import ArrayLike
+    from numpy.typing import ArrayLike  # type: ignore
 except (ImportError, ModuleNotFoundError):
     ArrayLike = np.ndarray
 
@@ -76,8 +76,8 @@ class BootstrapEfficiency:
     def _hist_to_result(
         hist: bh.Histogram, nanto: Optional[float] = None
     ) -> "BootstrapEfficiency.Histogram":
-        numerator = hist[bh.loc(1), ...]
-        notselected = hist[bh.loc(0), ...]
+        numerator = cast(bh.Histogram, hist[bh.loc(1), ...])  # type: ignore
+        notselected = cast(bh.Histogram, hist[bh.loc(0), ...])  # type: ignore
         denominator = numerator + notselected
         ratio = numerator / denominator
         if nanto is not None:
@@ -125,14 +125,14 @@ class BootstrapEfficiency:
         """
         return self._hist_to_result(self._hist.samples, nanto=self._nanto)
 
-    def mean(self, flow=False) -> "BootstrapEfficiency.Array":
+    def mean(self, flow: bool = False) -> "BootstrapEfficiency.Array":
         """Binned mean of the bootstrap samples."""
         samples = self.samples
         return BootstrapEfficiency.Array(
             *[np.mean(hst.view(flow=flow), axis=-1) for hst in samples]
         )
 
-    def std(self, flow=False) -> np.ndarray:
+    def std(self, flow: bool = False) -> np.ndarray:
         """Binned standard deviation of the boostrap samples."""
         samples = self.samples
         return BootstrapEfficiency.Array(
@@ -140,7 +140,7 @@ class BootstrapEfficiency:
         )
 
     def percentile(
-        self, q: float, flow=False, interpolation: str = "linear"
+        self, q: float, flow: bool = False, interpolation: str = "linear"
     ) -> np.ndarray:
         """
         Binned q-th percentile of the bootstrap samples.
@@ -237,7 +237,7 @@ class BootstrapEfficiency:
                 "selected array size does not match the other input array sizes."
             )
 
-    def view(self, flow=False) -> Any:
+    def view(self, flow: bool = False) -> Any:
         """
         Return a view of the underlying histogram bootstrap sample values.
         """

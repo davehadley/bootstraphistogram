@@ -1,28 +1,38 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import matplotlib.pyplot as plt  # type: ignore
+import numpy as np  # type: ignore
 
 
-def _standard_error_mean(size, sigma=1.0):
-    return sigma / np.sqrt(size)
+def _standard_error_mean(size: int, sigma: float = 1.0) -> float:
+    return float(sigma / np.sqrt(size))
 
 
-def _mc_error_mean(size, sigma=1.0, nmc=1000):
-    return np.std(
-        [np.average(np.random.normal(size=size, scale=sigma)) - 0.0 for _ in range(nmc)]
+def _mc_error_mean(size: int, sigma: float = 1.0, nmc: int = 1000) -> float:
+    return float(
+        np.std(
+            [
+                np.average(np.random.normal(size=size, scale=sigma)) - 0.0
+                for _ in range(nmc)
+            ]
+        )
     )
 
 
-def _standard_error_std(size, sigma=1.0):
-    return np.sqrt(sigma ** 2 / (2.0 * size))
+def _standard_error_std(size: int, sigma: float = 1.0) -> float:
+    return float(np.sqrt(sigma ** 2 / (2.0 * size)))
 
 
-def _mc_error_std(size, sigma=1.0, nmc=1000):
-    return np.std(
-        [np.std(np.random.normal(size=size, scale=sigma)) - sigma for _ in range(nmc)]
+def _mc_error_std(size: int, sigma: float = 1.0, nmc: int = 1000) -> float:
+    return float(
+        np.std(
+            [
+                np.std(np.random.normal(size=size, scale=sigma)) - sigma
+                for _ in range(nmc)
+            ]
+        )
     )
 
 
-def test_standarderror():
+def test_standarderror() -> None:
     fig = plt.figure()
     ax = fig.add_subplot(211)
     X = np.arange(10, 100, 10)

@@ -9,6 +9,7 @@ readme = "README.md"
 documentation = "https://bootstraphistogram.readthedocs.io/"
 homepage = "https://github.com/davehadley/bootstraphistogram"
 repository = "https://pypi.org/project/bootstraphistogram/"
+include = ["bootstraphistogram/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
@@ -22,6 +23,7 @@ pre-commit = "^2.15.0"
 tox = "^3.24.4"
 memory-profiler = "^0.58.0"
 pylint = "^2.12.1"
+mypy = "^0.941"
 
 [tool.black]
 target_version = ['py36', 'py37', 'py38']

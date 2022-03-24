@@ -1,14 +1,14 @@
 import itertools
 import pickle
-from typing import Callable
+from typing import Callable, Optional
 
-import numpy as np
+import numpy as np  # type: ignore
 import pytest
 
 from bootstraphistogram import BootstrapMoment
 
 
-def test_bootstrapmoment_numsamples():
+def test_bootstrapmoment_numsamples() -> None:
     numsamples = 1000
     moment = BootstrapMoment(numsamples=numsamples, rng=1234)
     values = np.arange(100, dtype=float)
@@ -16,7 +16,7 @@ def test_bootstrapmoment_numsamples():
     assert len(moment.mean().samples) == moment.numsamples == numsamples
 
 
-def test_bootstrapmoment_mean():
+def test_bootstrapmoment_mean() -> None:
     moment = BootstrapMoment(numsamples=1000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -24,7 +24,7 @@ def test_bootstrapmoment_mean():
     assert abs(np.average(moment.mean().samples) - np.average(values)) < 1.0
 
 
-def test_bootstrapmoment_std_deviation():
+def test_bootstrapmoment_std_deviation() -> None:
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -40,7 +40,7 @@ def _skewness(array: np.ndarray) -> np.ndarray:
     return np.average(((array - mu) / sigma) ** 3)
 
 
-def test_bootstrapmoment_skewness():
+def test_bootstrapmoment_skewness() -> None:
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -48,7 +48,7 @@ def test_bootstrapmoment_skewness():
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
 
 
-def test_bootstrapmoment_add():
+def test_bootstrapmoment_add() -> None:
     moment1 = BootstrapMoment(numsamples=1000, rng=1234)
     moment2 = BootstrapMoment(numsamples=1000, rng=1234)
     values1 = np.arange(50, dtype=float)
@@ -67,7 +67,7 @@ def test_bootstrapmoment_add():
     assert abs(np.average(moment.skewness().samples) - _skewness(values)) < 10.0
 
 
-def test_bootstrapmoment_array_shapes():
+def test_bootstrapmoment_array_shapes() -> None:
     moment = BootstrapMoment(numsamples=3, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -81,7 +81,7 @@ def test_bootstrapmoment_array_shapes():
 
 
 @pytest.mark.parametrize("rng", [None, 1234])
-def test_bootstrapmoment_correlations(rng):
+def test_bootstrapmoment_correlations(rng: Optional[int]) -> None:
     moment = BootstrapMoment(numsamples=10000, rng=rng)
     values = [1]
     moment.fill(values)
@@ -94,7 +94,7 @@ def test_bootstrapmoment_correlations(rng):
         assert abs(cor[row, column] - 1.0) < 1e-6
 
 
-def test_bootstrapmoment_correlations_many_samples():
+def test_bootstrapmoment_correlations_many_samples() -> None:
     moment = BootstrapMoment(numsamples=10000, rng=1234)
     values = np.arange(100, dtype=float)
     moment.fill(values)
@@ -107,7 +107,7 @@ def test_bootstrapmoment_correlations_many_samples():
         assert cor[row, column] > 0.5
 
 
-def test_pickle():
+def test_pickle() -> None:
     moment1 = BootstrapMoment(numsamples=1000, rng=1234)
     values = np.arange(100, dtype=float)
     moment1.fill(values)
@@ -133,8 +133,12 @@ def test_pickle():
     "with_weights", [False, True], ids=["without_weights", "with_weights"]
 )
 def test_bootstrapmoment_standard_distributions(
-    with_weights: bool, generator: Callable[[], np.ndarray], mu, sigma, skewness
-):
+    with_weights: bool,
+    generator: Callable[[], np.ndarray],
+    mu: float,
+    sigma: float,
+    skewness: float,
+) -> None:
     moment = BootstrapMoment(numsamples=100, rng=1234)
     values = generator()
     if with_weights:

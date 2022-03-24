@@ -2,35 +2,35 @@ import itertools
 import pickle
 
 import boost_histogram as bh
-import numpy as np
+import numpy as np  # type: ignore
 import pytest
 
 from bootstraphistogram import BootstrapHistogram
 
 
-def _standard_error_mean(size, sigma=1.0):
-    return sigma / np.sqrt(size)
+def _standard_error_mean(size: int, sigma: float = 1.0) -> float:
+    return float(sigma / np.sqrt(size))
 
 
-def _standard_error_std(size, sigma=1.0):
-    return np.sqrt(sigma ** 2 / (2.0 * size))
+def _standard_error_std(size: int, sigma: float = 1.0) -> float:
+    return float(np.sqrt(sigma ** 2 / (2.0 * size)))
 
 
 def array_almost_equal(
     actual: np.ndarray,
     expected: np.ndarray,
     delta: float,
-) -> None:
-    return np.all(np.abs(actual - expected) < delta)
+) -> bool:
+    return bool(np.all(np.abs(actual - expected) < delta))
 
 
-def test_contructor():
+def test_contructor() -> None:
     # check constructor works without raising error
     BootstrapHistogram(bh.axis.Regular(100, -1.0, 1.0), rng=1234)
     return
 
 
-def test_fill():
+def test_fill() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), numsamples=10, rng=1234)
     size = 100000
     data = np.random.normal(loc=0.0, scale=1.0, size=size)
@@ -49,7 +49,7 @@ def test_fill():
     return
 
 
-def test_samples():
+def test_samples() -> None:
     numsamples = 100
     hist = BootstrapHistogram(
         bh.axis.Regular(100, 0.0, 1.0), numsamples=numsamples, rng=1234
@@ -70,7 +70,7 @@ def test_samples():
     return
 
 
-def test_numsamples_property():
+def test_numsamples_property() -> None:
     numsamples = 100
     hist = BootstrapHistogram(
         bh.axis.Regular(100, -5.0, 5.0), numsamples=numsamples, rng=1234
@@ -78,13 +78,13 @@ def test_numsamples_property():
     assert hist.numsamples == numsamples
 
 
-def test_axes_property():
+def test_axes_property() -> None:
     axes = (bh.axis.Regular(100, -5.0, 5.0),)
     hist = BootstrapHistogram(*axes, rng=1234)
     assert hist.axes[:-1] == axes
 
 
-def test_view_property():
+def test_view_property() -> None:
     numsamples = 10
     nbins = 5
     hist = BootstrapHistogram(
@@ -94,7 +94,7 @@ def test_view_property():
     assert np.array_equal(view, np.zeros(shape=(nbins, numsamples)))
 
 
-def test_equality():
+def test_equality() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=123)
     hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=123)
     data = np.random.normal(size=1000)
@@ -103,7 +103,7 @@ def test_equality():
     assert hist1 == hist2
 
 
-def test_inequality():
+def test_inequality() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
     hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0))
     data = np.random.normal(size=1000)
@@ -112,7 +112,7 @@ def test_inequality():
     assert hist1 != hist2
 
 
-def test_add():
+def test_add() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
     hist2 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
     hist1.fill(np.random.normal(size=1000))
@@ -123,7 +123,7 @@ def test_add():
     assert np.array_equal(hist3.view(), a1 + a2)
 
 
-def test_multiply_by_scalar_samples():
+def test_multiply_by_scalar_samples() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
     hist1.fill(np.random.normal(size=1000))
     scale = 2.0
@@ -132,7 +132,7 @@ def test_multiply_by_scalar_samples():
     assert np.array_equal(hist3.view(), a1)
 
 
-def test_divide_by_scalar_samples():
+def test_divide_by_scalar_samples() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
     hist1.fill(np.random.normal(size=1000))
     scale = 2.0
@@ -141,7 +141,7 @@ def test_divide_by_scalar_samples():
     assert np.array_equal(hist3.view(), a1)
 
 
-def test_multiply_by_scalar_nominal():
+def test_multiply_by_scalar_nominal() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(1, -1.0, 1.0), numsamples=10, rng=1234)
     hist.fill(0.0)
     scaled = hist * 2.0
@@ -151,7 +151,7 @@ def test_multiply_by_scalar_nominal():
     assert scaled2 == scaled
 
 
-def test_divide_by_scalar_nominal():
+def test_divide_by_scalar_nominal() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(1, -1.0, 1.0), numsamples=10, rng=1234)
     hist.fill(0.0)
     hist.fill(0.0)
@@ -160,7 +160,7 @@ def test_divide_by_scalar_nominal():
     assert np.array_equal(list(scaled.nominal.view()), [1.0])
 
 
-def test_multiply_by_histogram():
+def test_multiply_by_histogram() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist1.fill([0.0, 1.0, 0.0, 1.0])
@@ -170,7 +170,7 @@ def test_multiply_by_histogram():
     assert np.array_equal(hist3.samples, hist1.samples * hist2.samples)
 
 
-def test_add_by_histogram():
+def test_add_by_histogram() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist1.fill([0.0, 1.0, 0.0, 1.0])
@@ -180,7 +180,7 @@ def test_add_by_histogram():
     assert np.array_equal(hist3.samples, hist1.samples + hist2.samples)
 
 
-def test_add_scalar():
+def test_add_scalar() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist1.fill([0.0, 0.0, 1.0])
     hist3 = hist1 + 2
@@ -190,7 +190,7 @@ def test_add_scalar():
     assert hist3 == hist4
 
 
-def test_sub_by_histogram():
+def test_sub_by_histogram() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist1.fill([0.0, 1.0, 0.0, 1.0])
@@ -200,7 +200,7 @@ def test_sub_by_histogram():
     assert np.array_equal(hist3.samples, hist1.samples - hist2.samples)
 
 
-def test_sub_scalar():
+def test_sub_scalar() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist1.fill([0.0, 0.0, 1.0])
     hist3 = hist1 - 2
@@ -208,7 +208,7 @@ def test_sub_scalar():
     assert np.array_equal(hist3.samples, hist1.samples - 2)
 
 
-def test_divide_by_histogram():
+def test_divide_by_histogram() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist2 = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), rng=1234)
     hist1.fill([0.0, 1.0] * 400)
@@ -218,14 +218,14 @@ def test_divide_by_histogram():
     assert np.array_equal(hist3.samples, (hist1.samples / hist2.samples))
 
 
-def test_pickle():
+def test_pickle() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
     hist1.fill(np.random.normal(size=1000))
     hist2 = pickle.loads(pickle.dumps(hist1))
     assert hist1 == hist2
 
 
-def test_nominal():
+def test_nominal() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(100, -5.0, 5.0), rng=1234)
     data = np.random.normal(size=1000)
     hist.fill(data)
@@ -233,7 +233,7 @@ def test_nominal():
     assert np.array_equal(hist.nominal.view(), arr)
 
 
-def test_mean():
+def test_mean() -> None:
     size = 100000
     hist = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=1234)
     data = np.random.uniform(size=size)
@@ -245,7 +245,7 @@ def test_mean():
     return
 
 
-def test_std():
+def test_std() -> None:
     numsamples = 100
     hist = BootstrapHistogram(
         bh.axis.Regular(100, 0.0, 1.0), numsamples=numsamples, rng=1234
@@ -261,7 +261,7 @@ def test_std():
     )
 
 
-def test_fill_with_float_weights():
+def test_fill_with_float_weights() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(5, 0.0, 5.0), rng=1234)
     values = [0.0, 1.0, 2.0, 3.0, 3.0, 4.0]
     weights = [0.0, 1.0, 2.0, 3.0, 4.0, -1.0]
@@ -269,7 +269,7 @@ def test_fill_with_float_weights():
     assert np.array_equal(hist.nominal.view(), [0.0, 1.0, 2.0, 7.0, -1.0])
 
 
-def test_fill_with_integer_weights():
+def test_fill_with_integer_weights() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(5, 0.0, 5.0), rng=1234)
     values = [0.0, 1.0, 2.0, 3.0, 3.0, 4.0]
     weights = [0, 1, 2, 3, 4, -1]
@@ -284,7 +284,9 @@ def test_fill_with_integer_weights():
     "withweight", [True, False], ids=["withweight", "withoutweight"]
 )
 @pytest.mark.parametrize("withseed", [True, False], ids=["withseed", "withoutseed"])
-def test_fill_with_various_length_arrays(numsamples, numarray, withseed, withweight):
+def test_fill_with_various_length_arrays(
+    numsamples: int, numarray: int, withseed: bool, withweight: bool
+) -> None:
     hist = BootstrapHistogram(
         bh.axis.Regular(5, 0.0, 1.0), numsamples=numsamples, rng=1234
     )
@@ -294,7 +296,7 @@ def test_fill_with_various_length_arrays(numsamples, numarray, withseed, withwei
     hist.fill(values, weight=weight, seed=seed)
 
 
-def test_fill_with_record_id_seed():
+def test_fill_with_record_id_seed() -> None:
     hist1 = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=1234)
     hist2 = BootstrapHistogram(bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=5678)
     data = np.random.uniform(size=10000)
@@ -304,7 +306,7 @@ def test_fill_with_record_id_seed():
     assert hist1 == hist2
 
 
-def test_fill_with_invalid_data():
+def test_fill_with_invalid_data() -> None:
     hist1d = BootstrapHistogram(
         bh.axis.Regular(100, -5.0, 5.0), numsamples=10, rng=1234
     )
@@ -331,7 +333,7 @@ def test_fill_with_invalid_data():
     return
 
 
-def test_project():
+def test_project() -> None:
     xax = bh.axis.Regular(2, 0.0, 2.0)
     yax = bh.axis.Regular(3, 0.0, 3.0)
     hist = BootstrapHistogram(xax, yax, numsamples=9, rng=1234)
@@ -342,13 +344,13 @@ def test_project():
     assert hist.project(0, 1).view(flow=True).shape == (2 + 2, 3 + 2, 9)
 
 
-def test_fill_with_empty_array():
+def test_fill_with_empty_array() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), numsamples=9, rng=1234)
     hist.fill([])
     assert np.all(hist.view(flow=True) == np.zeros((2 + 2, 9)))
 
 
-def test_fill_with_empty_weighted_array():
+def test_fill_with_empty_weighted_array() -> None:
     hist = BootstrapHistogram(bh.axis.Regular(2, 0.0, 2.0), numsamples=9, rng=1234)
     hist.fill([], weight=[])
     assert np.all(hist.view(flow=True) == np.zeros((2 + 2, 9)))
