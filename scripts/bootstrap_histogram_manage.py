@@ -16,7 +16,7 @@ def _parseargs() -> Namespace:
             "build",
             "test",
             "build-documentation",
-            "coverage",
+            "lint",
         ],
     )
     args = parser.parse_args()
@@ -35,8 +35,8 @@ def _main() -> None:
         _test()
     if args.command == "build-documentation":
         _build_documentation()
-    if args.command == "coverage":
-        _coverage()
+    if args.command == "lint":
+        _lint()
     return
 
 
@@ -88,14 +88,9 @@ def _build_documentation() -> None:
     )
 
 
-def _coverage() -> None:
+def _lint() -> None:
     run(
-        ["poetry", "run", "coverage", "run", "-m", "pytest", "tests"],
-        check=True,
-        cwd=_PACKAGE_ROOT_DIRECTORY,
-    )
-    run(
-        ["poetry", "run", "coverage", "report", "-m"],
+        ["poetry", "run", "pre-commit", "run", "--all-files"],
         check=True,
         cwd=_PACKAGE_ROOT_DIRECTORY,
     )
