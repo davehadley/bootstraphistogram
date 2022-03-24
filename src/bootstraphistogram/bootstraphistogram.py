@@ -1,7 +1,7 @@
 """Implements the main class of this package: :py:class:`BoostrapHistogram`."""
 
 from copy import copy, deepcopy
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union, cast
 
 import boost_histogram as bh
 import numpy as np
@@ -47,9 +47,9 @@ class BootstrapHistogram:
         **kwargs: Any,
     ):
         # we defer the initialization of these variables until _intialize.
-        self._nominal: bh.Histogram = None
-        self._hist: bh.Histogram = None
-        self._random: np.random.Generator = None
+        self._nominal: bh.Histogram = None  # type: ignore
+        self._hist: bh.Histogram = None  # type: ignore
+        self._random: np.random.Generator = None  # type: ignore
         axeslist = list(axes)
         nominal = bh.Histogram(*axeslist, **kwargs)
         axeslist.append(bh.axis.Integer(0, numsamples, underflow=False, overflow=False))
@@ -380,10 +380,11 @@ class BootstrapHistogram:
         result = copy(self)
         arglist = list(args)
         sampleaxis = len(self.axes) - 1
-        result._nominal = self._nominal.project(
-            *[arg for arg in arglist if arg != sampleaxis]
+        result._nominal = cast(
+            bh.Histogram,
+            self._nominal.project(*[arg for arg in arglist if arg != sampleaxis]),
         )
         if sampleaxis not in arglist:
             arglist.append(sampleaxis)
-        result._hist = self._hist.project(*arglist)
+        result._hist = cast(bh.Histogram, self._hist.project(*arglist))
         return result

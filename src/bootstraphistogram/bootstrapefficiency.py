@@ -1,7 +1,7 @@
 """Implements :py:class:`BoostrapEfficiency`, a tool for calculating binned efficiencies."""
 
 from copy import copy, deepcopy
-from typing import Any, NamedTuple, Optional, Tuple, Union
+from typing import Any, NamedTuple, Optional, Tuple, Union, cast
 
 import boost_histogram as bh
 import numpy as np
@@ -76,8 +76,8 @@ class BootstrapEfficiency:
     def _hist_to_result(
         hist: bh.Histogram, nanto: Optional[float] = None
     ) -> "BootstrapEfficiency.Histogram":
-        numerator = hist[bh.loc(1), ...]
-        notselected = hist[bh.loc(0), ...]
+        numerator = cast(bh.Histogram, hist[bh.loc(1), ...])  # type: ignore
+        notselected = cast(bh.Histogram, hist[bh.loc(0), ...])  # type: ignore
         denominator = numerator + notselected
         ratio = numerator / denominator
         if nanto is not None:
