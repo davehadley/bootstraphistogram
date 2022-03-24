@@ -9,6 +9,7 @@ readme = "README.md"
 documentation = "https://bootstraphistogram.readthedocs.io/"
 homepage = "https://github.com/davehadley/bootstraphistogram"
 repository = "https://pypi.org/project/bootstraphistogram/"
+include = ["bootstraphistogram/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
