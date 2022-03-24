@@ -63,7 +63,7 @@ html_static_path: List[str] = []
 
 intersphinx_mapping = {
     "boost_histogram": ("https://boost-histogram.readthedocs.io/en/latest/", None),
-    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org/", None),
 }
 

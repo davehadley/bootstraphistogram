@@ -1,9 +1,9 @@
 """Functions to plot `BootstrapHistogram` objects with `matplotlib`."""
 from typing import Any, Optional, Tuple
 
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.axes import Axes as MplAxes
+import matplotlib.pyplot as plt  # type: ignore
+import numpy as np  # type: ignore
+from matplotlib.axes import Axes as MplAxes  # type: ignore
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 
@@ -26,7 +26,7 @@ def _enforce1d(hist: BootstrapHistogram) -> None:
         )
 
 
-def _getaxes(ax: Optional[MplAxes]):
+def _getaxes(ax: Optional[MplAxes]) -> MplAxes:
     if ax is None:
         ax = plt.gca()
     return ax

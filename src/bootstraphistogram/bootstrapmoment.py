@@ -3,13 +3,13 @@ from copy import deepcopy
 from typing import Any, Optional, Union
 
 import boost_histogram as bh
-import numpy as np
+import numpy as np  # type: ignore
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from bootstraphistogram.valuewithsamples import ValueWithSamples
 
 try:
-    from numpy.typing import ArrayLike  # pylint: disable=E0611,E0401
+    from numpy.typing import ArrayLike  # type: ignore
 except (ImportError, ModuleNotFoundError):
     ArrayLike = np.ndarray
 
@@ -134,7 +134,7 @@ class BootstrapMoment:
         self._sum_wt2.fill(zeros, weight=wt2, seed=seed, **kwargs)
         self._sum_wt3.fill(zeros, weight=wt3, seed=seed, **kwargs)
 
-    def mean(self) -> ValueWithSamples:
+    def mean(self) -> ValueWithSamples[float]:
         """
         Compute the mean.
 
@@ -151,7 +151,7 @@ class BootstrapMoment:
         )
         return ValueWithSamples(nominal, samples.flatten())
 
-    def variance(self) -> ValueWithSamples:
+    def variance(self) -> ValueWithSamples[float]:
         """
         Compute the variance.
 
@@ -175,7 +175,7 @@ class BootstrapMoment:
         )
         return ValueWithSamples(nominal, samples.flatten())
 
-    def std(self) -> ValueWithSamples:
+    def std(self) -> ValueWithSamples[float]:
         """
         Compute the standard deviation.
 
@@ -188,7 +188,7 @@ class BootstrapMoment:
         variance = self.variance()
         return ValueWithSamples(np.sqrt(variance.nominal), np.sqrt(variance.samples))
 
-    def skewness(self) -> ValueWithSamples:
+    def skewness(self) -> ValueWithSamples[float]:
         """
         Compute the skewness.
 

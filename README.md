@@ -27,6 +27,13 @@ and install pre-commit-hooks.
 source setup.sh
 ```
 
+Alternatively, a `Dockerfile` is provided for a consistent development environment.
+```bash
+docker build -tbootstraphistogram:latest . && \
+docker start bootstraphistogram && \
+docker run --name bootstraphistogram -it -d bootstraphistogram:latest /bin/bash
+```
+
 This package uses [Python poetry](https://python-poetry.org/) for dependency management.
 ```bash
 poetry install
@@ -39,7 +46,7 @@ poetry run pytest
 
 To build documentation run:
 ```bash
-poetry run pip install sphinx && \
+poetry run pip install -r docs/requirements.txt && \
 poetry run sphinx-build -W docs docs-build
 ```
 
