@@ -12,8 +12,8 @@ from bootstraphistogram import BootstrapHistogram
 )
 @pytest.mark.parametrize("withseed", [True, False], ids=["withseed", "withoutseed"])
 def test_boostraphistogram_fast_and_slow_filling_give_identical_results(
-    withweight, withseed
-):
+    withweight: bool, withseed: bool
+) -> None:
     size = 10000
     hist_slow = BootstrapHistogram(
         bh.axis.Regular(100, 0.0, 1.0), numsamples=100, rng=1234
@@ -33,7 +33,9 @@ def test_boostraphistogram_fast_and_slow_filling_give_identical_results(
     "withweight", [True, False], ids=["withweight", "withoutweight"]
 )
 @pytest.mark.parametrize("withseed", [True, False], ids=["withseed", "withoutseed"])
-def test_boostraphistogram_fast_is_faster_than_slow(withweight, withseed):
+def test_boostraphistogram_fast_is_faster_than_slow(
+    withweight: bool, withseed: bool
+) -> None:
     numsamples = 10000
     arraysize = 100
     hist_slow = BootstrapHistogram(

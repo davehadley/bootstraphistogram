@@ -5,7 +5,7 @@ from boost_histogram.axis import Integer, Regular
 from bootstraphistogram.bootstrapefficiency import BootstrapEfficiency
 
 
-def test_bootstrap_efficiency_fill_1d_nominal():
+def test_bootstrap_efficiency_fill_1d_nominal() -> None:
     efficiency = BootstrapEfficiency(Regular(3, 0.0, 3.0), rng=1234)
     efficiency.fill(
         [1, 1, 0, 0, 0, 1],
@@ -17,7 +17,7 @@ def test_bootstrap_efficiency_fill_1d_nominal():
     assert np.all(nominal.efficiency.view() == np.array([1.0, 0.0, 0.5]))
 
 
-def test_bootstrap_efficiency_samples():
+def test_bootstrap_efficiency_samples() -> None:
     efficiency = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=1000, rng=1234)
     efficiency.fill(
         [1, 1, 0, 0, 0, 1] * 1000,
@@ -37,7 +37,7 @@ def test_bootstrap_efficiency_samples():
     )
 
 
-def test_bootstrap_efficiency_samples_percentile():
+def test_bootstrap_efficiency_samples_percentile() -> None:
     efficiency = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=1000, rng=1234)
     rng = np.random.default_rng(5678)
     efficiency.fill(
@@ -66,12 +66,12 @@ def test_bootstrap_efficiency_samples_percentile():
     )
 
 
-def test_bootstrap_efficiency_numsamples():
+def test_bootstrap_efficiency_numsamples() -> None:
     efficiency = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=123, rng=1234)
     assert efficiency.numsamples == 123
 
 
-def test_bootstrap_efficiency_axes():
+def test_bootstrap_efficiency_axes() -> None:
     efficiency = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=123, rng=1234)
     assert efficiency.axes == (
         Integer(0, 2, underflow=False, overflow=False),
@@ -80,7 +80,7 @@ def test_bootstrap_efficiency_axes():
     )
 
 
-def test_bootstrap_efficiency_view():
+def test_bootstrap_efficiency_view() -> None:
     efficiency = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=10, rng=1234)
     expectedwithflow = np.zeros(shape=(2, 5, 10))
     expectedwithoutflow = np.zeros(shape=(2, 3, 10))
@@ -88,7 +88,7 @@ def test_bootstrap_efficiency_view():
     assert np.all(efficiency.view(flow=False) == expectedwithoutflow)
 
 
-def test_bootstrap_efficiency_equality():
+def test_bootstrap_efficiency_equality() -> None:
     efficiency1 = BootstrapEfficiency(Regular(3, 0.0, 3.0), rng=1234)
     efficiency2 = BootstrapEfficiency(Regular(3, 0.0, 3.0), rng=1234)
     for efficiency in [efficiency1, efficiency2]:
@@ -101,7 +101,7 @@ def test_bootstrap_efficiency_equality():
     assert efficiency1 != efficiency2
 
 
-def test_bootstrap_efficiency_add():
+def test_bootstrap_efficiency_add() -> None:
     efficiency1 = BootstrapEfficiency(Regular(3, 0.0, 3.0))
     efficiency2 = BootstrapEfficiency(Regular(3, 0.0, 3.0))
     efficiency3 = BootstrapEfficiency(Regular(3, 0.0, 3.0))
@@ -115,7 +115,7 @@ def test_bootstrap_efficiency_add():
     assert efficiency_added == efficiency3
 
 
-def test_bootstrap_efficiency_project():
+def test_bootstrap_efficiency_project() -> None:
     xax = Regular(2, 0.0, 2.0)
     yax = Regular(3, 0.0, 3.0)
     eff = BootstrapEfficiency(xax, yax, numsamples=4, rng=1234)
@@ -127,30 +127,30 @@ def test_bootstrap_efficiency_project():
     assert eff.project(1, 2).view(flow=True).shape == (2, 2 + 2, 3 + 2, 4)
 
 
-def test_bootstrap_empty_fill_args_raises():
+def test_bootstrap_empty_fill_args_raises() -> None:
     eff = BootstrapEfficiency(Regular(3, 0.0, 3.0))
     with pytest.raises(ValueError):
         eff.fill([1, 0])
 
 
-def test_fill_with_empty_array():
+def test_fill_with_empty_array() -> None:
     eff = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=9)
     eff.fill([], [])
     assert np.all(eff.view(flow=True) == np.zeros((2, 3 + 2, 9)))
 
 
-def test_fill_with_mismatched_size_raises():
+def test_fill_with_mismatched_size_raises() -> None:
     eff = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=9)
     with pytest.raises(ValueError):
         eff.fill([1], [])
 
 
-def test_nanto():
+def test_nanto() -> None:
     eff = BootstrapEfficiency(Regular(3, 0.0, 3.0), numsamples=9, nanto=0.0)
     assert np.all(eff.nominal.efficiency.view() == [0.0, 0.0, 0.0])
 
 
-def test_efficiency_property():
+def test_efficiency_property() -> None:
     eff = BootstrapEfficiency(Regular(3, 0.0, 3.0), rng=1234)
     eff.fill(
         [1, 1, 0, 0, 0, 1] * 1000,

@@ -6,12 +6,12 @@ import numpy as np  # type: ignore
 from bootstraphistogram import BootstrapHistogram
 
 
-def _standard_error_mean(size, sigma=1.0):
-    return sigma / np.sqrt(size)
+def _standard_error_mean(size: int, sigma: float = 1.0) -> float:
+    return float(sigma / np.sqrt(size))
 
 
-def _standard_error_std(size, sigma=1.0):
-    return np.sqrt(sigma ** 2 / (2.0 * size))
+def _standard_error_std(size: int, sigma: float = 1.0) -> float:
+    return float(np.sqrt(sigma ** 2 / (2.0 * size)))
 
 
 def array_almost_equal(
@@ -19,11 +19,11 @@ def array_almost_equal(
     expected: np.ndarray,
     delta: float,
     msg: Optional[str] = None,
-) -> None:
-    return np.all(np.abs(actual - expected) < delta)
+) -> bool:
+    return bool(np.all(np.abs(actual - expected) < delta))
 
 
-def test_contructor():
+def test_constructor() -> None:
     # check constructor works without raising error
     BootstrapHistogram(
         bh.axis.Regular(100, -1.0, 1.0), bh.axis.Variable([0.0, 1.0, 3.0, 6.0])
@@ -31,7 +31,7 @@ def test_contructor():
     return
 
 
-def test_fill():
+def test_fill() -> None:
     hist = BootstrapHistogram(
         bh.axis.Regular(100, -5.0, 5.0),
         bh.axis.Regular(100, -5.0, 5.0),
@@ -63,7 +63,7 @@ def test_fill():
     return
 
 
-def test_samples():
+def test_samples() -> None:
     numsamples = 100
     hist = BootstrapHistogram(
         bh.axis.Regular(10, 0.0, 1.0),
@@ -88,7 +88,7 @@ def test_samples():
     return
 
 
-def test_projection():
+def test_projection() -> None:
     numsamples = 100
     hist = BootstrapHistogram(
         bh.axis.Regular(10, 0.0, 1.0),
@@ -113,7 +113,7 @@ def test_projection():
     )
 
 
-def test_projection2():
+def test_projection2() -> None:
     hist = BootstrapHistogram(
         bh.axis.Regular(100, -5.0, 5.0),
         bh.axis.Regular(100, -5.0, 5.0),
@@ -138,7 +138,7 @@ def test_projection2():
     return
 
 
-def test_projection3():
+def test_projection3() -> None:
     hist = BootstrapHistogram(
         bh.axis.Regular(3, 0.0, 3.0),
         bh.axis.Regular(2, 0.0, 2.0),
