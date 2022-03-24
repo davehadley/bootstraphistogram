@@ -2,7 +2,7 @@ import itertools
 import pickle
 
 import boost_histogram as bh
-import numpy as np
+import numpy as np  # type: ignore
 import pytest
 
 from bootstraphistogram import BootstrapHistogram

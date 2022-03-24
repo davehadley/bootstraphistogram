@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np  # type: ignore
 import pytest
 from boost_histogram.axis import Integer, Regular
 

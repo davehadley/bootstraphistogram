@@ -2,7 +2,7 @@ import itertools
 import pickle
 from typing import Callable
 
-import numpy as np
+import numpy as np  # type: ignore
 import pytest
 
 from bootstraphistogram import BootstrapMoment

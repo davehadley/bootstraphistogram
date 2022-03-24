@@ -3,13 +3,13 @@ from copy import deepcopy
 from typing import Any, Optional, Union
 
 import boost_histogram as bh
-import numpy as np
+import numpy as np  # type: ignore
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from bootstraphistogram.valuewithsamples import ValueWithSamples
 
 try:
-    from numpy.typing import ArrayLike  # pylint: disable=E0611,E0401
+    from numpy.typing import ArrayLike  # type: ignore
 except (ImportError, ModuleNotFoundError):
     ArrayLike = np.ndarray
 

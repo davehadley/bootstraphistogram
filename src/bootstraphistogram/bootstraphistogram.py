@@ -4,10 +4,10 @@ from copy import copy, deepcopy
 from typing import Any, Optional, Tuple, Union, cast
 
 import boost_histogram as bh
-import numpy as np
+import numpy as np  # type: ignore
 
 try:
-    from numpy.typing import ArrayLike
+    from numpy.typing import ArrayLike  # type: ignore
 except (ImportError, ModuleNotFoundError):
     ArrayLike = np.ndarray
 

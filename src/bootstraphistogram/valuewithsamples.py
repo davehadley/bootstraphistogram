@@ -1,7 +1,7 @@
 """Implements `ValueWithSamples`."""
 from typing import Generic, TypeVar
 
-import numpy as np
+import numpy as np  # type: ignore
 
 T = TypeVar("T")
 

@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np  # type: ignore
 
 from bootstraphistogram.valuewithsamples import ValueWithSamples
 
