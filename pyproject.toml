@@ -23,7 +23,6 @@ tox = "^3.24.4"
 memory-profiler = "^0.58.0"
 pylint = "^2.12.1"
 mypy = "^0.941"
-data-science-types = "^0.2.23"
 
 [tool.black]
 target_version = ['py36', 'py37', 'py38']
