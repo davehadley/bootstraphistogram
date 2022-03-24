@@ -18,7 +18,7 @@ WORKDIR /home/bootstraphistogram/bootstraphistogram
 RUN sudo chown bootstraphistogram:bootstraphistogram /home/bootstraphistogram/bootstraphistogram
 
 RUN python -m pip install --upgrade pip \
-    && python -m pip install poetry pre-commit
+    && python -m pip install poetry pre-commit \
     && pre-commit install
 
 
