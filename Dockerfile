@@ -18,14 +18,14 @@ WORKDIR /home/bootstraphistogram/bootstraphistogram
 RUN sudo chown bootstraphistogram:bootstraphistogram /home/bootstraphistogram/bootstraphistogram
 
 RUN python -m pip install --upgrade pip \
-    && python -m pip install poetry pre-commit \
-    && pre-commit install
-
+    && python -m pip install poetry pre-commit
 
 SHELL ["/bin/bash", "-c"]
 
 COPY --chown=bootstraphistogram:bootstraphistogram . ./
 
-CMD ["/bin/bash"]
-
 ENV PATH="/home/bootstraphistogram/bootstraphistogram/bin:/home/bootstraphistogram/.local/bin:${PATH}"
+
+RUN pre-commit install
+
+CMD ["/bin/bash"]
