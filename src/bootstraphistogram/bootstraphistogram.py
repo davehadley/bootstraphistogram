@@ -16,7 +16,7 @@ class BootstrapHistogram:
     """
     A histogram with automatic Poission bootstrap resampling
 
-    The implementation is backed by boost :std:doc:`usage/histogram`
+    The implementation is backed by boost :std:doc:`user-guide/histogram`
     (<https://github.com/scikit-hep/boost-histogram>) and thus
     :py:class:`BoostrapHistogram` mimics the :py:class:`boost_histogram.Histogram`
     interface.
