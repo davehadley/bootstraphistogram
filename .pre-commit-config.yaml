@@ -3,14 +3,14 @@ default_stages: [commit]
 repos:
 
 - repo: https://github.com/timothycrosley/isort
-  rev: 5.9.3
+  rev: 5.10.1
   hooks:
     - id: isort
       stages: [ commit ]
       args: ["--profile", "black"]
 
 - repo: https://github.com/ambv/black
-  rev: 21.10b0
+  rev: 22.3.0
   hooks:
   - id: black
     stages: [commit]
@@ -23,7 +23,7 @@ repos:
       stages: [commit]
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.0.1
+  rev: v4.2.0
   hooks:
     - id: check-added-large-files
     - id: check-ast

@@ -11,7 +11,7 @@ def _standard_error_mean(size: int, sigma: float = 1.0) -> float:
 
 
 def _standard_error_std(size: int, sigma: float = 1.0) -> float:
-    return float(np.sqrt(sigma ** 2 / (2.0 * size)))
+    return float(np.sqrt(sigma**2 / (2.0 * size)))
 
 
 def array_almost_equal(

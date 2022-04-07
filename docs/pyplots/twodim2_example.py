@@ -57,8 +57,8 @@ def stddev_bootstrap_2d(nevents=100, numbins=1, numsamples=1000):
 def stddev_analytic(nevents=100, numbins=1):
     sigma = np.sqrt(nevents / numbins)
     correlation = 1.0 / numbins
-    cov = correlation * sigma ** 2
-    return np.sqrt(2.0 * sigma ** 2 + 2.0 * cov)
+    cov = correlation * sigma**2
+    return np.sqrt(2.0 * sigma**2 + 2.0 * cov)
 
 
 def example2d():
