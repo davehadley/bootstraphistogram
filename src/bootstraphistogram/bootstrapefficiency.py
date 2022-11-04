@@ -125,22 +125,48 @@ class BootstrapEfficiency:
         """
         return self._hist_to_result(self._hist.samples, nanto=self._nanto)
 
-    def mean(self, flow: bool = False) -> "BootstrapEfficiency.Array":
-        """Binned mean of the bootstrap samples."""
+    def mean(
+        self, flow: bool = False, ignore_nan: bool = True
+    ) -> "BootstrapEfficiency.Array":
+        """Binned mean of the bootstrap samples.
+
+        Parameters
+        ----------
+        flow: bool
+            If True under and overflow bins are included.
+        ignore_nan : bool
+            If True :py:func:`numpy.nanmean` is used.
+
+        """
         samples = self.samples
+        mean = np.nanmean if ignore_nan else np.mean
         return BootstrapEfficiency.Array(
-            *[np.mean(hst.view(flow=flow), axis=-1) for hst in samples]
+            *[mean(hst.view(flow=flow), axis=-1) for hst in samples]
         )
 
-    def std(self, flow: bool = False) -> np.ndarray:
-        """Binned standard deviation of the boostrap samples."""
+    def std(self, flow: bool = False, ignore_nan: bool = True) -> np.ndarray:
+        """Binned standard deviation of the boostrap samples.
+
+        Parameters
+        ----------
+        flow: bool
+            If True under and overflow bins are included.
+        ignore_nan : bool
+            If True :py:func:`numpy.nanstd` is used.
+
+        """
         samples = self.samples
+        std = np.nanstd if ignore_nan else np.std
         return BootstrapEfficiency.Array(
-            *[np.std(hst.view(flow=flow), axis=-1) for hst in samples]
+            *[std(hst.view(flow=flow), axis=-1) for hst in samples]
         )
 
     def percentile(
-        self, q: float, flow: bool = False, interpolation: str = "linear"
+        self,
+        q: float,
+        flow: bool = False,
+        interpolation: str = "linear",
+        ignore_nan: bool = True,
     ) -> np.ndarray:
         """
         Binned q-th percentile of the bootstrap samples.
@@ -149,8 +175,12 @@ class BootstrapEfficiency:
         ----------
         q : float
             The percentile, a number between 0 and 100 (inclusive).
+        flow: bool
+            If True under and overflow bins are included.
         interpolation : str
             As :py:func:`numpy.percentile`.
+        ignore_nan : bool
+            If True :py:func:`numpy.nanpercentile` is used.
 
         Returns
         -------
@@ -159,11 +189,10 @@ class BootstrapEfficiency:
             bin in the histogram, .
         """
         samples = self.samples
+        percentile = np.nanpercentile if ignore_nan else np.percentile
         return BootstrapEfficiency.Array(
             *[
-                np.nanpercentile(
-                    hst.view(flow=flow), q, axis=-1, interpolation=interpolation
-                )
+                percentile(hst.view(flow=flow), q, axis=-1, interpolation=interpolation)
                 for hst in samples
             ]
         )

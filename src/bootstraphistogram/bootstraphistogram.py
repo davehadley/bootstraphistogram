@@ -97,9 +97,16 @@ class BootstrapHistogram:
         """
         return self._hist
 
-    def mean(self, flow: bool = False) -> np.ndarray:
+    def mean(self, flow: bool = False, ignore_nan: bool = True) -> np.ndarray:
         """
         Binned sample mean.
+
+        Parameters
+        ----------
+        flow: bool
+            If True under and overflow bins are included.
+        ignore_nan : bool
+            If True :py:func:`numpy.nanmean` is used.
 
         Returns
         -------
@@ -107,11 +114,19 @@ class BootstrapHistogram:
             an array containing the mean value of all bootstrap samples for each bin
             in the histogram.
         """
-        return np.mean(self.view(flow=flow), axis=-1)
+        mean = np.nanmean if ignore_nan else np.mean
+        return mean(self.view(flow=flow), axis=-1)
 
-    def std(self, flow: bool = False) -> np.ndarray:
+    def std(self, flow: bool = False, ignore_nan: bool = True) -> np.ndarray:
         """
         Binned sample standard deviation.
+
+        Parameters
+        ----------
+        flow: bool
+            If True under and overflow bins are included.
+        ignore_nan : bool
+            If True :py:func:`numpy.nanstd` is used.
 
         Returns
         -------
@@ -119,20 +134,30 @@ class BootstrapHistogram:
             an array containing the standard deviation of all bootstrap sample values
             for each bin in the histogram, .
         """
-        return np.std(self.view(flow=flow), axis=-1)
+        std = np.nanstd if ignore_nan else np.std
+        return std(self.view(flow=flow), axis=-1)
 
     def percentile(
-        self, q: float, flow: bool = False, interpolation: str = "linear"
+        self,
+        q: float,
+        flow: bool = False,
+        interpolation: str = "linear",
+        ignore_nan: bool = True,
     ) -> np.ndarray:
         """
         Binned q-th percentile.
+
 
         Parameters
         ----------
         q : float
             The percentile, a number between 0 and 100 (inclusive).
+        flow: bool
+            If True under and overflow bins are included.
         interpolation : str
             As :py:func:`numpy.percentile`.
+        ignore_nan : bool
+            If True :py:func:`numpy.nanpercentile` is used.
 
         Returns
         -------
@@ -140,9 +165,8 @@ class BootstrapHistogram:
             an array containing the q-th percentile of all bootstrap samples for each
             bin in the histogram, .
         """
-        return np.percentile(
-            self.view(flow=flow), q, axis=-1, interpolation=interpolation
-        )
+        percentile = np.nanpercentile if ignore_nan else np.percentile
+        return percentile(self.view(flow=flow), q, axis=-1, interpolation=interpolation)
 
     @property
     def numsamples(self) -> int:
