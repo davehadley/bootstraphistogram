@@ -18,9 +18,9 @@ numpy = [
     # to ensure that poetry will install the correct supported numpy versions
     {version = ">=1.19.0,<1.20", python = "<3.7"},
     {version = ">=1.19.0,<1.22.0", python = ">=3.7,<3.8"},
-    {version = ">=1.19.0", python = ">=3.8,<3.9"},
-    {version = ">=1.21.0", python = ">=3.9,<3.10"},
-    {version = ">=1.21.4", python = ">=3.10"}
+    {version = "^1.19.0", python = ">=3.8,<3.9"},
+    {version = "^1.19.0", python = ">=3.9,<3.10"},
+    {version = "^1.19.0", python = ">=3.10"}
 ]
 boost-histogram = ">=1.0.0"
 matplotlib = "^3.1"
