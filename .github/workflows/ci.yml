@@ -2,9 +2,9 @@ name: ci
 
 on: 
   push:
-    branches: [master, dev]
+    branches: [dev]
   pull_request:
-    branches: [master, dev]
+    branches: [dev]
 
 jobs:
   pre-commit:
@@ -17,8 +17,8 @@ jobs:
           python-version: '3.8'
       - name: Run pre-commit checks
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-          source $HOME/.poetry/env && \
+          curl -sSL https://install.python-poetry.org | python - --version 1.1.15
+            export PATH=$HOME/.local/bin:${PATH} && \
             poetry install && \
             poetry run pre-commit install && \
             poetry run pre-commit run --all-files
@@ -29,7 +29,7 @@ jobs:
     needs: pre-commit
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10', '3.11' ]
     
     steps:
       - uses: actions/checkout@v2
@@ -39,13 +39,12 @@ jobs:
           python-version: '${{ matrix.python-version }}'
       - name: Setup Poetry
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-          source $HOME/.poetry/env
+          curl -sSL https://install.python-poetry.org | python - --version 1.1.15
       - name: Install Dependencies
-        run: source $HOME/.poetry/env && poetry install
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry install
       - name: pytest
-        run: source $HOME/.poetry/env && poetry run pytest
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry run pytest
       - name: Build
-        run: source $HOME/.poetry/env && poetry build
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry build
       - name: Publish (dry-run)
-        run: source $HOME/.poetry/env && poetry publish --dry-run --username username --password password
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry publish --dry-run --username username --password password
