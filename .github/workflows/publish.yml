@@ -11,18 +11,18 @@ jobs:
       max-parallel: 5
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
       - name: Setup Poetry
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-          source $HOME/.poetry/env
+          curl -sSL https://install.python-poetry.org | python - --version 1.1.15
+          export PATH=$HOME/.local/bin:${PATH}
       - name: Install Dependencies
-        run: source $HOME/.poetry/env && poetry install
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry install
       - name: Build
-        run: source $HOME/.poetry/env && poetry build
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry build
       - name: Publish
-        run: source $HOME/.poetry/env && poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_PASSWORD }}
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_PASSWORD }}
