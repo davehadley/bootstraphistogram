@@ -2,53 +2,46 @@ name: ci
 
 on: 
   push:
-    branches: [master, dev]
+    branches: [dev]
   pull_request:
-    branches: [master, dev]
-  schedule:
-  # run once per week in case latest version of depedencies or compiler cause issues
-  - cron: '41 3 * * 0'
+    branches: [dev]
 
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Run pre-commit checks
-        run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-          source $HOME/.poetry/env && \
-            poetry install && \
-            poetry run pre-commit install && \
-            poetry run pre-commit run --all-files
-      - name: Build docs
-        run: pip install . && pip install -r docs/requirements.txt && sphinx-build -W docs docs-build
+
   build-linux:
     runs-on: ubuntu-latest
-    needs: pre-commit
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', ]
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '${{ matrix.python-version }}'
       - name: Setup Poetry
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-          source $HOME/.poetry/env
+          curl -sSL https://install.python-poetry.org | python - --version 1.1.15
+      - name: Cache Poetry
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-poetry
+        with:
+          path: ~/.cache/pypoetry/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
       - name: Install Dependencies
-        run: source $HOME/.poetry/env && poetry install
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry install
       - name: pytest
-        run: source $HOME/.poetry/env && poetry run pytest
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry run pytest
       - name: Build
-        run: source $HOME/.poetry/env && poetry build
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry build
       - name: Publish (dry-run)
-        run: source $HOME/.poetry/env && poetry publish --dry-run --username username --password password
+        run: export PATH=$HOME/.local/bin:${PATH} && poetry publish --dry-run --username username --password password
+      - name: Run pre-commit checks
+        run: |
+            export PATH=$HOME/.local/bin:${PATH} && \
+            poetry run pre-commit install && \
+            poetry run pre-commit run --all-files
+      - name: Build docs
+        run: pip install . && pip install -r docs/requirements.txt && sphinx-build -W docs docs-build

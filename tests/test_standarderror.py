@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt  # type: ignore
-import numpy as np  # type: ignore
+import numpy as np
 
 
 def _standard_error_mean(size: int, sigma: float = 1.0) -> float:
@@ -18,7 +18,7 @@ def _mc_error_mean(size: int, sigma: float = 1.0, nmc: int = 1000) -> float:
 
 
 def _standard_error_std(size: int, sigma: float = 1.0) -> float:
-    return float(np.sqrt(sigma ** 2 / (2.0 * size)))
+    return float(np.sqrt(sigma**2 / (2.0 * size)))
 
 
 def _mc_error_std(size: int, sigma: float = 1.0, nmc: int = 1000) -> float:

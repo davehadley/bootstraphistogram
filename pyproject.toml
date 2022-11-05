@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bootstraphistogram"
-version = "0.10.0"
+version = "0.11.0"
 description = "Poisson bootstrap histogram."
 license = "MIT"
 authors = ["David Hadley <davehadley@users.noreply.github.com>"]
@@ -13,7 +13,16 @@ include = ["bootstraphistogram/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-numpy = "^1.19.0"
+# The simplest numpy dependency spec fails to install with python 3.10 and 3.11
+# numpy = "^1.19.0"
+numpy = [
+    # Manually specifying the numpy-python compatibility seems to be necessary
+    # to ensure that poetry will install the latest supported numpy versions
+    # This should be simplified once python3.6 support is dropped
+    {version = ">=1.19.0,<1.20", python = "<3.7"},
+    {version = ">=1.19.0,<1.22.0", python = ">=3.7,<3.8"},
+    {version = "^1.19.0", python = ">=3.8"},
+]
 boost-histogram = ">=1.0.0"
 matplotlib = "^3.1"
 
@@ -22,8 +31,11 @@ pytest = "^6.0"
 pre-commit = "^2.15.0"
 tox = "^3.24.4"
 memory-profiler = "^0.58.0"
-pylint = "^2.12.1"
-mypy = "^0.941"
+pylint = "==2.13.9"
+mypy = [
+    # Fix for https://github.com/python/mypy/issues/13627
+    {version = "^0.982", python = ">=3.8" }
+]
 
 [tool.black]
 target_version = ['py36', 'py37', 'py38']
@@ -37,3 +49,6 @@ minversion = "6.0"
 addopts = " --doctest-modules "
 doctest_optionflags = " NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER ELLIPSIS"
 testpaths = ["tests", "src", "docs"]
+
+[tool.mypy]
+strict = true

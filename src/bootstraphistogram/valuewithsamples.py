@@ -1,7 +1,15 @@
 """Implements `ValueWithSamples`."""
-from typing import Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
-import numpy as np  # type: ignore
+import numpy as np
+
+if TYPE_CHECKING:
+    try:
+        from typing import Any
+
+        from numpy.typing import NDArray
+    except (ImportError, ModuleNotFoundError):
+        pass
 
 T = TypeVar("T")
 
@@ -13,11 +21,11 @@ class ValueWithSamples(Generic[T]):
     ----------
     nominal: T
         the value without any resampling.
-    samples: np.ndarray
+    samples: "NDArray[Any]"
         the same value with Poisson bootstrap resampling applied.
     """
 
-    def __init__(self, nominal: T, samples: np.ndarray):
+    def __init__(self, nominal: T, samples: "NDArray[Any]"):
         self._nominal = nominal
         self._samples = samples
 
@@ -27,7 +35,7 @@ class ValueWithSamples(Generic[T]):
         return self._nominal
 
     @property
-    def samples(self) -> np.ndarray:
+    def samples(self) -> "NDArray[Any]":
         """the value with Poisson bootstrap resampling applied."""
         return self._samples
 

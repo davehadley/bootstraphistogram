@@ -18,7 +18,7 @@ from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from bootstraphistogram.bootstrapmoment import BootstrapMoment
 from bootstraphistogram.valuewithsamples import ValueWithSamples
 
-__version__ = "0.10.0"
+__version__ = "0.11.0"
 __license__ = "MIT"
 __author__ = "David Hadley"
 __url__ = "https://github.com/davehadley/bootstraphistogram"

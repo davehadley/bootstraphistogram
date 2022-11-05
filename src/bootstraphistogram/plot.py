@@ -2,7 +2,7 @@
 from typing import Any, Optional, Tuple
 
 import matplotlib.pyplot as plt  # type: ignore
-import numpy as np  # type: ignore
+import numpy as np
 from matplotlib.axes import Axes as MplAxes  # type: ignore
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
@@ -33,7 +33,10 @@ def _getaxes(ax: Optional[MplAxes]) -> MplAxes:
 
 
 def errorbar(
-    hist: BootstrapHistogram, ax: Optional[MplAxes] = None, **kwargs: Any
+    hist: BootstrapHistogram,
+    percentiles: Optional[Tuple[float, float, float]] = None,
+    ax: Optional[MplAxes] = None,
+    **kwargs: Any,
 ) -> Any:
     """
     Plot the bootstrap sample mean and standard deviation.
@@ -42,6 +45,9 @@ def errorbar(
     ----------
     hist: bootstraphistogram.BootstrapHistogram
         the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
+    percentiles: Optional[Tuple[float, float]]
+        lower, central, and upper percentiles to use for error bar.
+        If None, the mean +-1 standard deviation is plotted.
     ax: Optional[matplotlib.axes.Axes]
         :py:class:`matplotlib.axes.Axes` to plot on.
     **kwargs : Any
@@ -57,8 +63,15 @@ def errorbar(
     edges = hist.axes[0].edges
     x = hist.axes[0].centers
     xerr = [x - edges[:-1], edges[1:] - x]
-    y = hist.mean()
-    yerr = hist.std()
+    if percentiles is None:
+        y = hist.mean()
+        yerr: Any = hist.std()
+    else:
+        (errlow, centralpoint, errhigh) = percentiles
+        y = hist.percentile(centralpoint)
+        yerrlow = hist.percentile(errlow)
+        yerrhigh = hist.percentile(errhigh)
+        yerr = (y - yerrlow, yerrhigh - y)
     return ax.errorbar(x=x, y=y, xerr=xerr, yerr=yerr, **kwargs)
 
 
@@ -95,12 +108,14 @@ def step(
         Y = hist.percentile(percentile)
     else:
         Y = hist.mean()
-    return ax.step(edges, np.concatenate((Y, [Y[-1]])), where="post", **kwargs)
+    return ax.step(
+        edges, np.concatenate((Y, [Y[-1]])), where="post", **kwargs  # type: ignore
+    )
 
 
 def fill_between(
     hist: BootstrapHistogram,
-    percentiles: Tuple[float, float] = _PERCENTILES_1SIGMA,
+    percentiles: Optional[Tuple[float, float]] = _PERCENTILES_1SIGMA,
     ax: Optional[MplAxes] = None,
     **kwargs: Any,
 ) -> Any:
@@ -111,9 +126,10 @@ def fill_between(
     ----------
     hist: bootstraphistogram.BootstrapHistogram
         the :py:class:`bootstraphistogram.BootstrapHistogram` to plot.
-    percentiles: Tuple[float, float]
+    percentiles: Optional[Tuple[float, float]]
         upper and lower percentile bounds to fill. A pair of numbers between 0 and 100.
         Defaults to fill an equal-tailed 68.27% interval.
+        If None, the mean +-1 standard deviation is plotted.
     ax: Optional[matplotlib.axes.Axes]
         :py:class:`matplotlib.axes.Axes` to plot on.
     **kwargs : Any
@@ -126,10 +142,16 @@ def fill_between(
     """
     _enforce1d(hist)
     ax = _getaxes(ax)
-    low, high = min(percentiles), max(percentiles)
     X = hist.axes[0].edges
-    Y1 = hist.percentile(low)
-    Y2 = hist.percentile(high)
+    if percentiles is None:
+        mean = hist.mean()
+        std = hist.std()
+        Y1 = mean - std
+        Y2 = mean - std
+    else:
+        low, high = min(percentiles), max(percentiles)
+        Y1 = hist.percentile(low)
+        Y2 = hist.percentile(high)
     Y1 = np.concatenate((Y1, [Y1[-1]]))
     Y2 = np.concatenate((Y2, [Y2[-1]]))
     return ax.fill_between(x=X, y1=Y1, y2=Y2, step="post", **kwargs)

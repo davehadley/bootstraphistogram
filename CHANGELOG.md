@@ -1,3 +1,12 @@
+# 0.11.0 (2022-11-04)
+
+  - Add `ignore_nan` option to some methods to use `numpy.nanmean`, 
+    `numpy.nanstd` and `numpy.nanpercentile` instead of `numpy.mean`, 
+    `numpy.std` and `numpy.percentile`.
+  - Add more flexibility to plotting functions to display percentiles or 
+    mean/standard deviation.
+  - Improved type hints.
+
 # 0.10.0 (2022-03-24)
 
   - Improved type hinting.

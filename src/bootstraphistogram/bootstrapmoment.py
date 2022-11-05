@@ -1,17 +1,18 @@
 """Tools for calculating the moments of a data set."""
 from copy import deepcopy
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import boost_histogram as bh
-import numpy as np  # type: ignore
+import numpy as np
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 from bootstraphistogram.valuewithsamples import ValueWithSamples
 
-try:
-    from numpy.typing import ArrayLike  # type: ignore
-except (ImportError, ModuleNotFoundError):
-    ArrayLike = np.ndarray
+if TYPE_CHECKING:
+    try:
+        from numpy.typing import ArrayLike
+    except (ImportError, ModuleNotFoundError):
+        pass
 
 
 class BootstrapMoment:
@@ -99,9 +100,9 @@ class BootstrapMoment:
 
     def fill(
         self,
-        values: ArrayLike,
-        weight: Optional[ArrayLike] = None,
-        seed: Optional[ArrayLike] = None,
+        values: "ArrayLike",
+        weight: Optional["ArrayLike"] = None,
+        seed: Optional["ArrayLike"] = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -110,11 +111,11 @@ class BootstrapMoment:
 
         Parameters
         ----------
-        values : ArrayLike
+        values : "ArrayLike"
             A 1D array containing the values from which moments will be calculated.
-        weight : Optional[ArrayLike]
+        weight : Optional["ArrayLike"]
             weights associated with the values.
-        seed: Optional[ArrayLike]
+        seed: Optional["ArrayLike"]
             Per-element seed. Overrides the Generator given in the constructor and
             uses a pseudo-random number generator seeded by the given value.
             In some cases it is desirable to seed the generator with a record ID to
@@ -144,10 +145,10 @@ class BootstrapMoment:
             the (weighted) mean of the (weighted) fill values and bootstrap resamples.
         """
         nominal = float(
-            _mean(sumwt=self._sum_wt.nominal.view(), sumw=self._sum_w.nominal.view())
+            _mean(sumwt=self._sum_wt.nominal.view(), sumw=self._sum_w.nominal.view())  # type: ignore
         )
-        samples = _mean(
-            sumwt=self._sum_wt.samples.view(), sumw=self._sum_w.samples.view()
+        samples = np.asarray(
+            _mean(sumwt=self._sum_wt.samples.view(), sumw=self._sum_w.samples.view())
         )
         return ValueWithSamples(nominal, samples.flatten())
 
@@ -166,12 +167,14 @@ class BootstrapMoment:
                 sumw=self._sum_w.nominal.view(),
                 sumwt=self._sum_wt.nominal.view(),
                 sumwt2=self._sum_wt2.nominal.view(),
-            )
+            )  # type: ignore
         )
-        samples = _variance(
-            sumw=self._sum_w.samples.view(),
-            sumwt=self._sum_wt.samples.view(),
-            sumwt2=self._sum_wt2.samples.view(),
+        samples = np.asarray(
+            _variance(
+                sumw=self._sum_w.samples.view(),
+                sumwt=self._sum_wt.samples.view(),
+                sumwt2=self._sum_wt2.samples.view(),
+            )
         )
         return ValueWithSamples(nominal, samples.flatten())
 
@@ -204,13 +207,15 @@ class BootstrapMoment:
                 sumwt=self._sum_wt.nominal.view(),
                 sumwt2=self._sum_wt2.nominal.view(),
                 sumwt3=self._sum_wt3.nominal.view(),
-            )
+            )  # type: ignore
         )
-        samples = _skewness(
-            sumw=self._sum_w.samples.view(),
-            sumwt=self._sum_wt.samples.view(),
-            sumwt2=self._sum_wt2.samples.view(),
-            sumwt3=self._sum_wt3.samples.view(),
+        samples = np.asarray(
+            _skewness(
+                sumw=self._sum_w.samples.view(),
+                sumwt=self._sum_wt.samples.view(),
+                sumwt2=self._sum_wt2.samples.view(),
+                sumwt3=self._sum_wt3.samples.view(),
+            )
         )
         return ValueWithSamples(nominal, samples.flatten())
 
@@ -229,19 +234,23 @@ class BootstrapMoment:
         return result
 
 
-def _mean(sumw: ArrayLike, sumwt: ArrayLike) -> ArrayLike:
+def _mean(sumw: "ArrayLike", sumwt: "ArrayLike") -> "ArrayLike":
     return np.divide(sumwt, sumw)
 
 
-def _variance(sumw: ArrayLike, sumwt: ArrayLike, sumwt2: ArrayLike) -> ArrayLike:
+def _variance(
+    sumw: "ArrayLike", sumwt: "ArrayLike", sumwt2: "ArrayLike"
+) -> "ArrayLike":
     mu = _mean(sumwt=sumwt, sumw=sumw)
     mu2 = np.multiply(mu, mu)
-    return mu2 + np.divide((sumwt2 - 2.0 * np.multiply(sumwt, mu)), sumw)
+    return np.asarray(
+        mu2 + np.divide((np.asarray(sumwt2) - 2.0 * np.multiply(sumwt, mu)), sumw)
+    )
 
 
 def _skewness(
-    sumw: ArrayLike, sumwt: ArrayLike, sumwt2: ArrayLike, sumwt3: ArrayLike
-) -> ArrayLike:
+    sumw: "ArrayLike", sumwt: "ArrayLike", sumwt2: "ArrayLike", sumwt3: "ArrayLike"
+) -> "ArrayLike":
     mu = _mean(sumwt=sumwt, sumw=sumw)
     sigma = np.sqrt(_variance(sumw=sumw, sumwt=sumwt, sumwt2=sumwt2))
     mut3 = np.divide(sumwt3, sumw)

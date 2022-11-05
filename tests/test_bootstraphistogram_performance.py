@@ -1,7 +1,7 @@
 from timeit import timeit
 
 import boost_histogram as bh
-import numpy as np  # type: ignore
+import numpy as np
 import pytest
 
 from bootstraphistogram import BootstrapHistogram

@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt  # type: ignore
-import numpy as np  # type: ignore
+import numpy as np
 
 from bootstraphistogram import BootstrapHistogram, axis, plot
 
@@ -22,6 +22,13 @@ def test_plot_errorbar() -> None:
     return
 
 
+def test_plot_errorbar_with_percentiles() -> None:
+    hist = uniformhist()
+    plot.errorbar(hist, (10.0, 50.0, 90.0))
+    plt.show()
+    return
+
+
 def test_plot_step() -> None:
     hist = uniformhist()
     plot.step(hist)
@@ -32,6 +39,12 @@ def test_plot_step() -> None:
 def test_plot_fillbetween() -> None:
     hist = uniformhist()
     plot.fill_between(hist)
+    return
+
+
+def test_plot_fillbetween_with_std_and_mean() -> None:
+    hist = uniformhist()
+    plot.fill_between(hist, percentiles=None)
     return
 
 

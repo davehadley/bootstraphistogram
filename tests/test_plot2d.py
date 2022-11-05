@@ -1,6 +1,6 @@
 from typing import Tuple
 
-import numpy as np  # type: ignore
+import numpy as np
 import pytest
 
 from bootstraphistogram import BootstrapHistogram, axis, plot
