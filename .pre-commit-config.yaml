@@ -17,13 +17,15 @@ repos:
 
 
 - repo:  https://gitlab.com/pycqa/flake8
-  rev: 3.9.2
+  rev: 5.0.4
   hooks:
     - id: flake8
       stages: [commit]
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.2.0
+  # don't update this beyond 4.0.1 otherwise it stops working on python3.6
+  rev: v4.0.1
+
   hooks:
     - id: check-added-large-files
     - id: check-ast
@@ -37,7 +39,10 @@ repos:
   hooks:
     - id: mypy
       name: mypy
-      entry: poetry run mypy --install-types --strict --non-interactive src tests
+      # Don't mypy if the python version is 3.6 as numpy has no type-stubs
+      # Don't mypy if the python version is 3.7 as numpy types hints are missing 
+      # on some numpy methods
+      entry: bash -c "python -c \"import sys; sys.exit(sys.version_info[1]>7)\" || poetry run mypy --strict src tests"
       pass_filenames: false
       language: system
       types: [python]

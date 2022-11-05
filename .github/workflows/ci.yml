@@ -15,9 +15,9 @@ jobs:
         python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', ]
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '${{ matrix.python-version }}'
       - name: Setup Poetry
@@ -33,6 +33,7 @@ jobs:
         run: export PATH=$HOME/.local/bin:${PATH} && poetry publish --dry-run --username username --password password
       - name: Run pre-commit checks
         run: |
+            export PATH=$HOME/.local/bin:${PATH} && \
             poetry run pre-commit install && \
             poetry run pre-commit run --all-files
       - name: Build docs
