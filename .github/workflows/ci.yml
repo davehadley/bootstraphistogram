@@ -28,7 +28,7 @@ jobs:
         env:
           cache-name: cache-poetry
         with:
-          path: ~/.cache/pypoetry/
+          path: ./poetry.lock
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
       - name: Install Dependencies
         run: export PATH=$HOME/.local/bin:${PATH} && poetry install
