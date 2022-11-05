@@ -1,15 +1,16 @@
 """Implements the main class of this package: :py:class:`BoostrapHistogram`."""
 
 from copy import copy, deepcopy
-from typing import Any, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Tuple, Union, cast
 
 import boost_histogram as bh
-import numpy as np  # type: ignore
+import numpy as np
 
-try:
-    from numpy.typing import ArrayLike  # type: ignore
-except (ImportError, ModuleNotFoundError):
-    ArrayLike = np.ndarray
+if TYPE_CHECKING:
+    try:
+        from numpy.typing import ArrayLike, NDArray
+    except (ImportError, ModuleNotFoundError):
+        pass
 
 
 class BootstrapHistogram:
@@ -49,7 +50,7 @@ class BootstrapHistogram:
         # we defer the initialization of these variables until _intialize.
         self._nominal: bh.Histogram = None  # type: ignore
         self._hist: bh.Histogram = None  # type: ignore
-        self._random: np.random.Generator = None
+        self._random: np.random.Generator = None  # type: ignore
         axeslist = list(axes)
         nominal = bh.Histogram(*axeslist, **kwargs)
         axeslist.append(bh.axis.Integer(0, numsamples, underflow=False, overflow=False))
@@ -97,7 +98,7 @@ class BootstrapHistogram:
         """
         return self._hist
 
-    def mean(self, flow: bool = False, ignore_nan: bool = True) -> np.ndarray:
+    def mean(self, flow: bool = False, ignore_nan: bool = True) -> "NDArray[Any]":
         """
         Binned sample mean.
 
@@ -115,9 +116,9 @@ class BootstrapHistogram:
             in the histogram.
         """
         mean = np.nanmean if ignore_nan else np.mean
-        return mean(self.view(flow=flow), axis=-1)
+        return np.asarray(mean(self.view(flow=flow), axis=-1))
 
-    def std(self, flow: bool = False, ignore_nan: bool = True) -> np.ndarray:
+    def std(self, flow: bool = False, ignore_nan: bool = True) -> "NDArray[Any]":
         """
         Binned sample standard deviation.
 
@@ -135,7 +136,7 @@ class BootstrapHistogram:
             for each bin in the histogram, .
         """
         std = np.nanstd if ignore_nan else np.std
-        return std(self.view(flow=flow), axis=-1)
+        return np.asarray(std(self.view(flow=flow), axis=-1))
 
     def percentile(
         self,
@@ -143,7 +144,7 @@ class BootstrapHistogram:
         flow: bool = False,
         interpolation: str = "linear",
         ignore_nan: bool = True,
-    ) -> np.ndarray:
+    ) -> "NDArray[Any]":
         """
         Binned q-th percentile.
 
@@ -166,7 +167,14 @@ class BootstrapHistogram:
             bin in the histogram, .
         """
         percentile = np.nanpercentile if ignore_nan else np.percentile
-        return percentile(self.view(flow=flow), q, axis=-1, interpolation=interpolation)
+        return np.asarray(
+            percentile(  # type: ignore
+                self.view(flow=flow),
+                q,
+                axis=-1,
+                interpolation=interpolation,
+            )
+        )
 
     @property
     def numsamples(self) -> int:
@@ -182,9 +190,9 @@ class BootstrapHistogram:
 
     def fill(
         self,
-        *args: ArrayLike,
-        weight: Optional[ArrayLike] = None,
-        seed: Optional[ArrayLike] = None,
+        *args: "ArrayLike",
+        weight: Optional["ArrayLike"] = None,
+        seed: Optional["ArrayLike"] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
         """
@@ -193,11 +201,11 @@ class BootstrapHistogram:
 
         Parameters
         ----------
-        *args : ArrayLike
+        *args : "ArrayLike"
             An 1D array containing coordinates for each dimension of the histogram.
-        weight : Optional[ArrayLike]
+        weight : Optional["ArrayLike"]
             Entry weights used to fill the histogram.
-        seed: Optional[ArrayLike]
+        seed: Optional["ArrayLike"]
             Per-element seed. Overrides the Generator given in the constructor and
             uses a pseudo-random number generator seeded by the given value.
             This may be useful when filling multiple histograms with data that is not
@@ -212,20 +220,20 @@ class BootstrapHistogram:
             Reference to this object. This is done to maintain consistency with
             `boost_histogram.Histogram`.
         """
-        args = tuple(np.asarray(a) for a in args)
+        arrays = tuple(np.asarray(a) for a in args)
         weight = np.asarray(weight) if weight is not None else None
         seed = np.asarray(seed) if seed is not None else None
-        self._validate_fill_inputs(args, weight, seed)
-        if (self.numsamples * args[0].size) < self._threshold_for_fast_method:
-            return self._fill_fast(*args, weight=weight, seed=seed, **kwargs)
+        self._validate_fill_inputs(arrays, weight, seed)
+        if (self.numsamples * arrays[0].size) < self._threshold_for_fast_method:
+            return self._fill_fast(*arrays, weight=weight, seed=seed, **kwargs)
         else:
-            return self._fill_slow(*args, weight=weight, seed=seed, **kwargs)
+            return self._fill_slow(*arrays, weight=weight, seed=seed, **kwargs)
 
     @staticmethod
     def _validate_fill_inputs(
-        args: ArrayLike,
-        weight: Optional[ArrayLike] = None,
-        seed: Optional[ArrayLike] = None,
+        args: Tuple["NDArray[Any]", ...],
+        weight: Optional["NDArray[Any]"] = None,
+        seed: Optional["NDArray[Any]"] = None,
     ) -> None:
         if len(args) <= 0:
             raise ValueError("fill must be provided at least 1 array as input.")
@@ -243,9 +251,9 @@ class BootstrapHistogram:
 
     def _fill_fast(
         self,
-        *args: ArrayLike,
-        weight: Optional[ArrayLike] = None,
-        seed: Optional[ArrayLike] = None,
+        *args: "NDArray[Any]",
+        weight: Optional["NDArray[Any]"] = None,
+        seed: Optional["NDArray[Any]"] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
         self._nominal.fill(*args, weight=weight, **kwargs)
@@ -255,28 +263,28 @@ class BootstrapHistogram:
             generators = np.asarray(
                 [np.random.Generator(np.random.PCG64(s)) for s in seed]
             )
-        args = tuple(np.broadcast_to(values, shape).T.flat for values in args)
+        flatiter = tuple(np.broadcast_to(values, shape).T.flat for values in args)
         index = np.broadcast_to(np.arange(self.numsamples), reversed(shape)).flat
         if seed is None:
-            sampleweights = self._random.poisson(1.0, size=shape)
+            sampleweights = np.asarray(self._random.poisson(1.0, size=shape))
         else:
             sampleweights = np.asarray(
                 [r.poisson(1.0, size=(self.numsamples,)) for r in generators],
-                dtype=np.float,
+                dtype=np.float64,
             ).T
         sampleweights = sampleweights.T
         if weight is not None:
             shapedweight = np.broadcast_to(weight, shape).T
             assert sampleweights.shape == shapedweight.shape
             sampleweights = sampleweights * shapedweight
-        hist.fill(*args, index, weight=sampleweights.flat, **kwargs)
+        hist.fill(*flatiter, index, weight=sampleweights.flat, **kwargs)
         return self
 
     def _fill_slow(
         self,
-        *args: ArrayLike,
-        weight: Optional[ArrayLike] = None,
-        seed: Optional[ArrayLike] = None,
+        *args: "NDArray[Any]",
+        weight: Optional["NDArray[Any]"] = None,
+        seed: Optional["NDArray[Any]"] = None,
         **kwargs: Any,
     ) -> "BootstrapHistogram":
         self._nominal.fill(*args, weight=weight, **kwargs)
@@ -292,7 +300,7 @@ class BootstrapHistogram:
             else:
                 sampleweights = np.fromiter(
                     (r.poisson(1.0) for r in generators),
-                    dtype=np.float,
+                    dtype=np.float64,
                     count=len(generators),
                 )
             if weight is not None:
@@ -318,7 +326,7 @@ class BootstrapHistogram:
         )
 
     def __add__(
-        self, other: Union["BootstrapHistogram", ArrayLike, float]
+        self, other: Union["BootstrapHistogram", "ArrayLike", float]
     ) -> "BootstrapHistogram":
         """
         Add together the values of two bootstrap histograms together.
@@ -338,54 +346,54 @@ class BootstrapHistogram:
             result._hist += other._hist
             result._nominal += other._nominal
         else:
-            result._hist += other
-            result._nominal += other
+            result._hist += other  # type: ignore
+            result._nominal += other  # type: ignore
         return result
 
     def __radd__(
-        self, other: Union["BootstrapHistogram", ArrayLike, float]
+        self, other: Union["BootstrapHistogram", "ArrayLike", float]
     ) -> "BootstrapHistogram":
         return self + other
 
     def __sub__(
-        self, other: Union["BootstrapHistogram", ArrayLike, float]
+        self, other: Union["BootstrapHistogram", "ArrayLike", float]
     ) -> "BootstrapHistogram":
         result = deepcopy(self)
         if isinstance(other, BootstrapHistogram):
             result._hist -= other._hist
             result._nominal -= other._nominal
         else:
-            result._hist -= other
-            result._nominal -= other
+            result._hist -= other  # type: ignore
+            result._nominal -= other  # type: ignore
         return result
 
     def __mul__(
-        self, other: Union["BootstrapHistogram", ArrayLike, float]
+        self, other: Union["BootstrapHistogram", "ArrayLike", float]
     ) -> "BootstrapHistogram":
         result = deepcopy(self)
         if isinstance(other, BootstrapHistogram):
             result._hist *= other._hist
             result._nominal *= other._nominal
         else:
-            result._hist *= other
-            result._nominal *= other
+            result._hist *= other  # type: ignore
+            result._nominal *= other  # type: ignore
         return result
 
     def __rmul__(
-        self, other: Union["BootstrapHistogram", ArrayLike, float]
+        self, other: Union["BootstrapHistogram", "ArrayLike", float]
     ) -> "BootstrapHistogram":
         return self * other
 
     def __truediv__(
-        self, other: Union["BootstrapHistogram", ArrayLike, float]
+        self, other: Union["BootstrapHistogram", "ArrayLike", float]
     ) -> "BootstrapHistogram":
         result = deepcopy(self)
         if isinstance(other, BootstrapHistogram):
             result._hist /= other._hist
             result._nominal /= other._nominal
         else:
-            result._hist /= other
-            result._nominal /= other
+            result._hist /= other  # type: ignore
+            result._nominal /= other  # type: ignore
         return result
 
     def project(self, *args: int) -> "BootstrapHistogram":

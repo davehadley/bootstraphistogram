@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt  # type: ignore
-import numpy as np  # type: ignore
+import numpy as np
 
 
 def _standard_error_mean(size: int, sigma: float = 1.0) -> float:

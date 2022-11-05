@@ -1,9 +1,15 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import boost_histogram as bh
-import numpy as np  # type: ignore
+import numpy as np
 
 from bootstraphistogram import BootstrapHistogram
+
+if TYPE_CHECKING:
+    try:
+        from numpy.typing import NDArray
+    except (ImportError, ModuleNotFoundError):
+        pass
 
 
 def _standard_error_mean(size: int, sigma: float = 1.0) -> float:
@@ -15,8 +21,8 @@ def _standard_error_std(size: int, sigma: float = 1.0) -> float:
 
 
 def array_almost_equal(
-    actual: np.ndarray,
-    expected: np.ndarray,
+    actual: Union[float, "NDArray[Any]"],
+    expected: Union[float, "NDArray[Any]"],
     delta: float,
     msg: Optional[str] = None,
 ) -> bool:

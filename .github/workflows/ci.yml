@@ -7,29 +7,12 @@ on:
     branches: [dev]
 
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Run pre-commit checks
-        run: |
-          curl -sSL https://install.python-poetry.org | python - --version 1.1.15
-            export PATH=$HOME/.local/bin:${PATH} && \
-            poetry install && \
-            poetry run pre-commit install && \
-            poetry run pre-commit run --all-files
-      - name: Build docs
-        run: pip install . && pip install -r docs/requirements.txt && sphinx-build -W docs docs-build
+
   build-linux:
     runs-on: ubuntu-latest
-    needs: pre-commit
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9', ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', ]
     
     steps:
       - uses: actions/checkout@v2
@@ -48,3 +31,9 @@ jobs:
         run: export PATH=$HOME/.local/bin:${PATH} && poetry build
       - name: Publish (dry-run)
         run: export PATH=$HOME/.local/bin:${PATH} && poetry publish --dry-run --username username --password password
+      - name: Run pre-commit checks
+        run: |
+            poetry run pre-commit install && \
+            poetry run pre-commit run --all-files
+      - name: Build docs
+        run: pip install . && pip install -r docs/requirements.txt && sphinx-build -W docs docs-build

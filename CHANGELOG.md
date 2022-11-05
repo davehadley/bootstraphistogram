@@ -5,6 +5,7 @@
     `numpy.std` and `numpy.percentile`.
   - Add more flexibility to plotting functions to display percentiles or 
     mean/standard deviation.
+  - Improved type hints.
 
 # 0.10.0 (2022-03-24)
 

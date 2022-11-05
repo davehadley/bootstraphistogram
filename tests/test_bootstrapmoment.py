@@ -1,11 +1,17 @@
 import itertools
 import pickle
-from typing import Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
-import numpy as np  # type: ignore
+import numpy as np
 import pytest
 
 from bootstraphistogram import BootstrapMoment
+
+if TYPE_CHECKING:
+    try:
+        from numpy.typing import NDArray
+    except (ImportError, ModuleNotFoundError):
+        pass
 
 
 def test_bootstrapmoment_numsamples() -> None:
@@ -34,10 +40,10 @@ def test_bootstrapmoment_std_deviation() -> None:
     assert abs(np.average(moment.std().samples) - np.std(values)) < 1.0
 
 
-def _skewness(array: np.ndarray) -> np.ndarray:
+def _skewness(array: "NDArray[Any]") -> "NDArray[Any]":
     mu = np.average(array)
     sigma = np.std(array)
-    return np.average(((array - mu) / sigma) ** 3)
+    return np.asarray(np.average(((array - mu) / sigma) ** 3))
 
 
 def test_bootstrapmoment_skewness() -> None:
@@ -134,7 +140,7 @@ def test_pickle() -> None:
 )
 def test_bootstrapmoment_standard_distributions(
     with_weights: bool,
-    generator: Callable[[], np.ndarray],
+    generator: Callable[[], "NDArray[Any]"],
     mu: float,
     sigma: float,
     skewness: float,

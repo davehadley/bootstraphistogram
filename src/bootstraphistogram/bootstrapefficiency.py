@@ -1,17 +1,18 @@
 """Implements :py:class:`BoostrapEfficiency`, a tool for calculating binned efficiencies."""
 
 from copy import copy, deepcopy
-from typing import Any, NamedTuple, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Tuple, Union, cast
 
 import boost_histogram as bh
-import numpy as np  # type: ignore
+import numpy as np
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
 
-try:
-    from numpy.typing import ArrayLike  # type: ignore
-except (ImportError, ModuleNotFoundError):
-    ArrayLike = np.ndarray
+if TYPE_CHECKING:
+    try:
+        from numpy.typing import ArrayLike, NDArray
+    except (ImportError, ModuleNotFoundError):
+        pass
 
 
 class BootstrapEfficiency:
@@ -51,9 +52,9 @@ class BootstrapEfficiency:
         """A result type to store arrays returned by
         :py:class:`bootstraphistogram.BootstrapEfficiency`"""
 
-        numerator: np.ndarray
-        denominator: np.ndarray
-        efficiency: np.ndarray
+        numerator: "NDArray[Any]"
+        denominator: "NDArray[Any]"
+        efficiency: "NDArray[Any]"
 
     def __init__(
         self,
@@ -144,7 +145,9 @@ class BootstrapEfficiency:
             *[mean(hst.view(flow=flow), axis=-1) for hst in samples]
         )
 
-    def std(self, flow: bool = False, ignore_nan: bool = True) -> np.ndarray:
+    def std(
+        self, flow: bool = False, ignore_nan: bool = True
+    ) -> "BootstrapEfficiency.Array":
         """Binned standard deviation of the boostrap samples.
 
         Parameters
@@ -167,7 +170,7 @@ class BootstrapEfficiency:
         flow: bool = False,
         interpolation: str = "linear",
         ignore_nan: bool = True,
-    ) -> np.ndarray:
+    ) -> "BootstrapEfficiency.Array":
         """
         Binned q-th percentile of the bootstrap samples.
 
@@ -192,7 +195,7 @@ class BootstrapEfficiency:
         percentile = np.nanpercentile if ignore_nan else np.percentile
         return BootstrapEfficiency.Array(
             *[
-                percentile(hst.view(flow=flow), q, axis=-1, interpolation=interpolation)
+                percentile(hst.view(flow=flow), q, axis=-1, interpolation=interpolation)  # type: ignore
                 for hst in samples
             ]
         )
@@ -213,10 +216,10 @@ class BootstrapEfficiency:
 
     def fill(
         self,
-        selected: ArrayLike,
-        *args: ArrayLike,
-        weight: Optional[ArrayLike] = None,
-        seed: Optional[ArrayLike] = None,
+        selected: "ArrayLike",
+        *args: "ArrayLike",
+        weight: Optional["ArrayLike"] = None,
+        seed: Optional["ArrayLike"] = None,
         **kwargs: Any,
     ) -> "BootstrapEfficiency":
         """
@@ -225,14 +228,14 @@ class BootstrapEfficiency:
 
         Parameters
         ----------
-        selected: ArrayLike
+        selected: "ArrayLike"
             A 1D boolean array determining whether an event enters the numerator or
             denominator.
-        *args : ArrayLike
+        *args : "ArrayLike"
             An 1D array containing coordinates for each dimension of the histogram.
-        weight : Optional[ArrayLike]
+        weight : Optional["ArrayLike"]
             Entry weights used to fill the histogram.
-        seed: Optional[ArrayLike]
+        seed: Optional["ArrayLike"]
             Per-element seed. Overrides the Generator given in the constructor and
             uses a pseudo-random number generator seeded by the given value.
             This may be useful when filling multiple histograms with data that is not
@@ -247,16 +250,16 @@ class BootstrapEfficiency:
             Reference to this object. This is done to maintain consistency with
             `boost_histogram.Histogram`.
         """
-        args = tuple(np.asarray(a) for a in args)
-        selected = np.asarray(selected).astype(bool)
-        self._validate_fill_inputs(args, selected)
-        self._hist.fill(selected, *args, weight=weight, seed=seed, **kwargs)
+        arrays = tuple(np.asarray(a) for a in args)
+        selectedarray = np.asarray(selected).astype(bool)
+        self._validate_fill_inputs(arrays, selectedarray)
+        self._hist.fill(selectedarray, *arrays, weight=weight, seed=seed, **kwargs)
         return self
 
     @staticmethod
     def _validate_fill_inputs(
-        args: ArrayLike,
-        selected: ArrayLike,
+        args: "Tuple[NDArray[Any], ...]",
+        selected: "NDArray[Any]",
     ) -> None:
         if len(args) <= 0:
             raise ValueError("fill must be provided at least 1 array as input.")

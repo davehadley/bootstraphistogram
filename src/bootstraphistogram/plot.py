@@ -2,7 +2,7 @@
 from typing import Any, Optional, Tuple
 
 import matplotlib.pyplot as plt  # type: ignore
-import numpy as np  # type: ignore
+import numpy as np
 from matplotlib.axes import Axes as MplAxes  # type: ignore
 
 from bootstraphistogram.bootstraphistogram import BootstrapHistogram
@@ -65,13 +65,13 @@ def errorbar(
     xerr = [x - edges[:-1], edges[1:] - x]
     if percentiles is None:
         y = hist.mean()
-        yerr = hist.std()
+        yerr: Any = hist.std()
     else:
         (errlow, centralpoint, errhigh) = percentiles
         y = hist.percentile(centralpoint)
-        errlow = hist.percentile(errlow)
-        errhigh = hist.percentile(errhigh)
-        yerr = (y - errlow, errhigh - y)
+        yerrlow = hist.percentile(errlow)
+        yerrhigh = hist.percentile(errhigh)
+        yerr = (y - yerrlow, yerrhigh - y)
     return ax.errorbar(x=x, y=y, xerr=xerr, yerr=yerr, **kwargs)
 
 
@@ -108,7 +108,9 @@ def step(
         Y = hist.percentile(percentile)
     else:
         Y = hist.mean()
-    return ax.step(edges, np.concatenate((Y, [Y[-1]])), where="post", **kwargs)
+    return ax.step(
+        edges, np.concatenate((Y, [Y[-1]])), where="post", **kwargs  # type: ignore
+    )
 
 
 def fill_between(
