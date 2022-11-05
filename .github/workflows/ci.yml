@@ -17,12 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '${{ matrix.python-version }}'
       - name: Setup Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python - --version 1.1.15
+      - name: Cache Poetry
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-poetry
+        with:
+          path: ~/.cache/pypoetry/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
       - name: Install Dependencies
         run: export PATH=$HOME/.local/bin:${PATH} && poetry install
       - name: pytest

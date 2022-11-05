@@ -42,7 +42,7 @@ repos:
       # Don't mypy if the python version is 3.6 as numpy has no type-stubs
       # Don't mypy if the python version is 3.7 as numpy types hints are missing 
       # on some numpy methods
-      entry: bash -c "python -c \"import sys; sys.exit(sys.version_info[1]>7)\" || poetry run mypy --strict src tests"
+      entry: bash -c "python -c \"import sys; sys.exit(sys.version_info[1]>7)\" || poetry run mypy --strict --non-interactive --install-types src tests"
       pass_filenames: false
       language: system
       types: [python]
